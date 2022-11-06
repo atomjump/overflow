@@ -2,7 +2,7 @@
 
 # overflow
 
-Acts like an 'overflow' on a sink: when there are too many messages in a forum, the old messages are trimmed.
+Acts like an 'overflow' on a sink: when there are too many messages in an AtomJump Messaging forum, the old messages are trimmed.
 
 # Requirements
 
