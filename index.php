@@ -73,8 +73,7 @@
             	}
             	
             	//Set the new message count, and the 'due a trimming' flag
-            	$sql = "UPDATE tbl_overflow_check SET int_current_msg_cnt = " . $new_msg_cnt . ",enm_due_trimming = '" . $due_a_trimming . "' WHERE int_layer_id = " . clean_data($message_forum_id);
-            	$result = $api->db_select($sql);		//TODO: confirm update has happened?
+            	$result = $api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_msg_cnt . ",enm_due_trimming = '" . $due_a_trimming . "' WHERE int_layer_id = " . clean_data($message_forum_id));		
            
             } else {
             	//TODO: Check what type of forum this is, public or private.
@@ -99,9 +98,10 @@
             	
             	//Create a new overflow entry for this forum
             	$sql = "INSERT INTO tbl_overflow ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, 'int_max_messages', 'enm_due_trimming') VALUES (null, " . clean_data($message_forum_id) . ", 1, " . clean_data($max_messages) . ",'false')";
-            	$result = $api->db_select($sql);			//TODO check plugin insert command
+            	$result = $api->db_select($sql);
             }
             
+            return true;
                 
         }
     }
