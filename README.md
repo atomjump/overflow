@@ -16,7 +16,13 @@ AtomJump Messaging Server >= 0.8.0
 sudo php install.php
 ```
 
-Include "overflow" in your config.json plugins.
+Include "overflow" in your config.json plugins array.
+
+Add an hourly (or some other timeframe) CRON entry for trim-messages.php e.g.
+
+```
+	0 * * * *       /usr/bin/php /your_server_path/api/plugins/overflow/trim-messages.php
+```
 
 # Future development
 

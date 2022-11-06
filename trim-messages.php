@@ -5,7 +5,7 @@
 	Trim message forums that are flagged to be trimmed from the oldest first. 
 	This will be called hourly on a regular cronjob.
 	
-	0 * * * *       /usr/bin/php /your_server_path/api/plugins/overflow/index.php
+	0 * * * *       /usr/bin/php /your_server_path/api/plugins/overflow/trim-messages.php
 	
 	1. Loop through each message from the bottom of that forum and search individually within that message for
 	images that are held on this server. They will start with the config.json JSON entry uploads.vendor.imageURL
