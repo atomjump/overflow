@@ -55,7 +55,7 @@
             		$new_msg_cnt = $row['int_current_msg_cnt'] + 1;
             	}
             	
-            	if($row['int_max_messages']) {
+            	if(isset($row['int_max_messages'])) {
             		$trigger_over_limit = 10;	//default
             		if($overflow_config['triggerOverLimit']) {
             			$trigger_over_limit = $overflow_config['triggerOverLimit'];
@@ -67,6 +67,9 @@
             			$due_a_trimming = "true";
             		
             		}
+            	} else {
+            		//A null max messages - no limit - never trim
+            		$due_a_trimming = "false";
             	}
             	
             	//Set the new message count, and the 'due a trimming' flag
@@ -78,12 +81,20 @@
             	$type = "public";
             	$max_messages = 50;		//Default
             	
-            	if(($overflow_config['publicForumLimit'])&&($type == "public")) {
-            		$max_messages = $overflow_config['publicForumLimit'];
+            	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
+            		if(is_null($overflow_config['publicForumLimit'])) {
+            			$max_messages = "NULL";
+            		} else {
+            			$max_messages = $overflow_config['publicForumLimit'];
+            		}
             	}
             	
             	if(($overflow_config['privateForumLimit'])&&($type == "private")) {
-            		$max_messages = $overflow_config['privateForumLimit'];
+            		if(is_null($overflow_config['privateForumLimit'])) {
+            			$max_messages = "NULL";
+            		} else {
+            			$max_messages = $overflow_config['privateForumLimit'];
+            		}
             	}
             	
             	//Create a new overflow entry for this forum
@@ -91,10 +102,6 @@
             	$result = $api->db_select($sql);			//TODO check plugin insert command
             }
             
-            
-            
-            
-             
                 
         }
     }
