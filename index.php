@@ -76,8 +76,24 @@
             	$result = $api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_msg_cnt . ",enm_due_trimming = '" . $due_a_trimming . "' WHERE int_layer_id = " . clean_data($message_forum_id));		
            
             } else {
-            	//TODO: Check what type of forum this is, public or private.
+            	//Check what type of forum this is, public or private.
+            	//If tbl_layer field 'var_public_code' is set then it is a 'private forum', in this sense (as it has a password access).
+            	//A NULL 'var_public_code' means it is a purely 'public forum' in this sense.
             	$type = "public";
+            	$sql = "SELECT var_public_code FROM tbl_layer WHERE int_layer_id = " . clean_data($message_forum_id);
+		        $result = $api->db_select($sql);
+				if($row = $api->db_fetch_array($result))
+				{
+					if(isset($row['var_public_code'])) {
+						//I.e. not a null value
+							$type = "private";
+					}
+				}
+				//Note: if the status of this forum changes from private to public or vica-versa, this value will not be automatically
+				//updated. You would still need to update the tbl_overflow_check table specifically.
+            	
+            	
+            	
             	$max_messages = 50;		//Default
             	
             	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
@@ -97,7 +113,7 @@
             	}
             	
             	//Create a new overflow entry for this forum
-            	$sql = "INSERT INTO tbl_overflow ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, 'int_max_messages', 'enm_due_trimming') VALUES (null, " . clean_data($message_forum_id) . ", 1, " . clean_data($max_messages) . ",'false')";
+            	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, 'int_max_messages', 'enm_due_trimming') VALUES (null, " . clean_data($message_forum_id) . ", 1, " . clean_data($max_messages) . ",'false')";
             	$result = $api->db_select($sql);
             }
             

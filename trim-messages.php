@@ -7,13 +7,13 @@
 	
 	0 * * * *       /usr/bin/php /your_server_path/api/plugins/overflow/index.php
 	
-	2. Loop through each message from the bototm of that forum and search individually within that message for
+	1. Loop through each message from the bottom of that forum and search individually within that message for
 	images that are held on this server. They will start with the config.json JSON entry uploads.vendor.imageURL
 	if images are uploaded via AmazonAWS (/digitalocean), or with the current server URL /images/im/ if uploaded
 	to the same server.
-	3. Delete the image from using the AmazonAWS API or the local file-system unlink();
-	4. Delete the message
-	5. Repeat for all messages in the list at the bottom of the forum. 
+	2. Delete the image from using the AmazonAWS API or the local file-system unlink();
+	3. Delete the message
+	4. Repeat for all messages in the list (at the bottom of the forum). 
 	
 	TODO: archiving old messages
 	
@@ -208,7 +208,7 @@
 	}
 
 	echo "Checking for layers due to be trimmed...\n";
-	$sql = "SELECT * FROM tbl_overflow WHERE enm_due_trimming = 'true'";
+	$sql = "SELECT * FROM tbl_overflow_check WHERE enm_due_trimming = 'true'";
     $result = $api->db_select($sql);
 	while($row = $api->db_fetch_array($result))
 	{
@@ -285,7 +285,7 @@
 			
 			//Write back the number of messages trimmed into the tbl_overflow record
 			$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
-			$api->db_update("tbl_overflow", "int_cnt_trimmed = " . $new_trimmed_cnt . " WHERE int_layer_id = " . $this_layer);
+			$api->db_update("tbl_overflow_check", "int_cnt_trimmed = " . $new_trimmed_cnt . " WHERE int_layer_id = " . $this_layer);
 		
 	} 
 		
