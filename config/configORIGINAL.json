@@ -1,0 +1,7 @@
+{
+	"serverPath": "/your/messaging/server/path/",
+	"notes": "Use message limit of 'null' for no limit",
+	"publicForumLimit": 50,
+	"privateForumLimit": 2000,
+	"triggerOverLimit", 10
+}

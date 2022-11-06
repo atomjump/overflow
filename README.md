@@ -15,3 +15,10 @@ AtomJump Messaging Server >= 0.8.0
 ```
 sudo php install.php
 ```
+
+Include "overflow" in your config.json plugins.
+
+# Future development
+
+* Warning about message limit being hit
+* Have facility for sysadmin or general users to change the message limit.
