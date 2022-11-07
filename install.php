@@ -8,12 +8,12 @@
         return rtrim($str, "/") . '/';
     }
     
-	if(!isset($notifications_config)) {
+	if(!isset($overflow_config)) {
         //Get global plugin config - but only once
 		$data = file_get_contents (dirname(__FILE__) . "/config/config.json");
         if($data) {
             $overflow_config = json_decode($data, true);
-            if(!isset($notifications_config)) {
+            if(!isset($overflow_config)) {
                 echo "Error: overflow config/config.json is not valid JSON.";
                 exit(0);
             }
