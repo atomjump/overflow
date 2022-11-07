@@ -55,7 +55,7 @@
 				}
 			}
             
-            error_log("Testing:" . $overflow_config['triggerOverLimit']);
+            error_log("Testing:" . $this->overflow_config['triggerOverLimit']);
             
             $api = new cls_plugin_api();
                
@@ -79,8 +79,8 @@
             	
             	if(isset($row['int_max_messages'])) {
             		$trigger_over_limit = 10;	//default
-            		if($overflow_config['triggerOverLimit']) {
-            			$trigger_over_limit = $overflow_config['triggerOverLimit'];
+            		if($this->overflow_config['triggerOverLimit']) {
+            			$trigger_over_limit = $this->overflow_config['triggerOverLimit'];
             		}
             		
          		 	//If this count is beyond the forum limit, flag the forum as being "due a trimming". It will be trimmed on the next CRON run.
@@ -118,19 +118,19 @@
             	
             	$max_messages = 50;		//Default
             	
-            	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
-            		if(is_null($overflow_config['publicForumLimit'])) {
+            	if((isset($this->overflow_config['publicForumLimit']))&&($type == "public")) {
+            		if(is_null($this->overflow_config['publicForumLimit'])) {
             			$max_messages = "NULL";
             		} else {
             			$max_messages = $overflow_config['publicForumLimit'];
             		}
             	}
             	
-            	if(($overflow_config['privateForumLimit'])&&($type == "private")) {
-            		if(is_null($overflow_config['privateForumLimit'])) {
+            	if(($this->overflow_config['privateForumLimit'])&&($type == "private")) {
+            		if(is_null($this->overflow_config['privateForumLimit'])) {
             			$max_messages = "NULL";
             		} else {
-            			$max_messages = $overflow_config['privateForumLimit'];
+            			$max_messages = $this->overflow_config['privateForumLimit'];
             		}
             	}
             	
