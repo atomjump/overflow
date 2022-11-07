@@ -208,7 +208,7 @@
 	}
 	
 	
-	echo "Using database host: " .  $db_cnf['hosts'][0] . "  name:" . $db_cnf['db']['name'] . "\n";
+	echo "Using database host: " .  $db_cnf['hosts'][0] . "  name:" . $db_cnf['name'] . "\n";
 		
 	$delete_forum = false;		
 	if(isset($db_cnf['deleteDeletes'])) {
