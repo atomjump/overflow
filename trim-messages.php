@@ -231,7 +231,7 @@
 				
 				global $cnf;
 				
-				if($cnf['db']['deleteDeletes'] === true) {
+				//if($cnf['db']['deleteDeletes'] === true) {
 					
 					
 					//Search for any images in the message
@@ -272,7 +272,7 @@
 					}
 				
 				
-				} else {
+				/*} else {
 					echo "Deactivating. But leaving images.";
 					if($preview == false) {
 					   echo "Deactivating message " . $row_msg['int_ssshout_id'] . "\n";
@@ -280,7 +280,7 @@
 					   
 					   $api->db_update("tbl_ssshout", "enm_active = 'false' WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
 					}
-				}
+				}*/
 			}
 			
 			
