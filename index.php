@@ -35,6 +35,7 @@
  		public function on_message($message_forum_id, $message, $message_id, $sender_id, $recipient_id, $sender_name, $sender_email, $sender_phone)
         {
             global $cnf;
+            global $overflow_config;
             $api = new cls_plugin_api();
                
             //Increment the count if a count already exists for this forum, else create a count and set as 1.  
@@ -113,7 +114,7 @@
             	}
             	
             	//Create a new overflow entry for this forum
-            	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, 'int_max_messages', 'enm_due_trimming') VALUES (null, " . clean_data($message_forum_id) . ", 1, " . clean_data($max_messages) . ",'false')";
+            	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, 'int_max_messages', 'enm_due_trimming') VALUES (NULL, " . clean_data($message_forum_id) . ", 1, " . clean_data($max_messages) . ",'false')";
             	$result = $api->db_select($sql);
             }
             
