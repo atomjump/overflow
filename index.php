@@ -36,6 +36,9 @@
         {
             global $cnf;
             global $overflow_config;
+            
+            echo "Testing:" . $overflow_config['triggerOverLimit'];
+            
             $api = new cls_plugin_api();
                
             //Increment the count if a count already exists for this forum, else create a count and set as 1.  
