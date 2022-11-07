@@ -181,7 +181,6 @@
 	if($overflow_config['layerTitleDbOverride']) {
 		//Override the selected database
 		$_REQUEST['uniqueFeedbackId'] = $overflow_config['layerTitleDbOverride'];
-		echo "Label used: " . $_REQUEST['uniqueFeedbackId'] , "\n";
 	}
 	if($overflow_config['preview']) {
 		$preview = $overflow_config['preview'];
@@ -196,7 +195,6 @@
 	$image_folder = $start_path . "images/im/";
 	
 	$notify = false;
-	echo "Connecting to the database..\n";
 	include_once($start_path . 'config/db_connect.php');	
 	
 	$define_classes_path = $start_path;     //This flag ensures we have access to the typical classes, before the cls.pluginapi.php is included
