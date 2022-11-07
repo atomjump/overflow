@@ -55,7 +55,7 @@
 				}
 			}
             
-            error_log("Testing:" . $this->overflow_config['triggerOverLimit']);
+            error_log("Testing:" . $this->overflow_config['publicForumLimit']);
             
             $api = new cls_plugin_api();
                
