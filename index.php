@@ -122,7 +122,7 @@
             		if(is_null($this->overflow_config['publicForumLimit'])) {
             			$max_messages = "NULL";
             		} else {
-            			$max_messages = $overflow_config['publicForumLimit'];
+            			$max_messages = $this->$overflow_config['publicForumLimit'];
             		}
             	}
             	
@@ -145,7 +145,7 @@
 				}
             	
             	//Create a new overflow entry for this forum
-            	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, `int_max_messages`, `enm_due_trimming`) VALUES (NULL, " . clean_data($message_forum_id) . ", 1, " . clean_data($max_messages) . ",'false')";
+            	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, `int_max_messages`, `enm_due_trimming`) VALUES (NULL, " . clean_data($message_forum_id) . ", " . $current_msg_count . ", " . clean_data($max_messages) . ",'false')";
             	$result = $api->db_select($sql);
             }
             
