@@ -208,12 +208,12 @@
 	}
 	
 	
-	echo "Using database host: " .  $cnf['db']['hosts'][0] . "  name:" . $cnf['db']['name'] . "\n";
+	echo "Using database host: " .  $db_cnf['hosts'][0] . "  name:" . $db_cnf['db']['name'] . "\n";
 		
 	$delete_forum = false;		
-	if(isset($cnf['db']['deleteDeletes'])) {
+	if(isset($db_cnf['deleteDeletes'])) {
 		//Defaults to the server-defined option, unless..
-		$delete_forum = $cnf['db']['deleteDeletes'];
+		$delete_forum = $db_cnf['deleteDeletes'];
 	}
 	if(isset($overflow_config['deleteForum'])) {
 		//Unless we have an override in our local config
@@ -283,6 +283,9 @@
 						error_log("Deleting message " . $row_msg['int_ssshout_id']);
 						$sql_del = "DELETE FROM tbl_ssshout WHERE int_ssshout_id = " . $row_msg['int_ssshout_id'];
 						$api->db_select($sql_del);
+					} else {
+						echo "Would be deleting message " . $row_msg['int_ssshout_id'] . "\n";
+					
 					}
 				
 				
@@ -299,11 +302,15 @@
 				}
 			}
 			
-			
-			//Write back the number of messages trimmed into the tbl_overflow record, reduce the count, switch to 'not due a trimming'
-			$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
-			$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
-			$api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_messages_cnt . ", int_cnt_trimmed = " . $new_trimmed_cnt . ", enm_due_trimming = 'false' WHERE int_layer_id = " . $this_layer);
+			if($preview == false) {
+				//Write back the number of messages trimmed into the tbl_overflow record, reduce the count, switch to 'not due a trimming'
+				$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
+				$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
+				$api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_messages_cnt . ", int_cnt_trimmed = " . $new_trimmed_cnt . ", enm_due_trimming = 'false' WHERE int_layer_id = " . $this_layer);
+				echo "Set message cnt = " . $new_messages_cnt . ", trimmed cnt = " . $new_trimmed_cnt . " for layer " . $this_layer . "\n";
+			} else {
+				echo "Would set message cnt = " . $new_messages_cnt . ", trimmed cnt = " . $new_trimmed_cnt . " for layer " . $this_layer . "\n";
+			}
 		
 	} 
 		
