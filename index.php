@@ -22,6 +22,7 @@
     class plugin_overflow
     {
         public $verbose = false;
+        public $overflow_config;
      	
      	private function trim_trailing_slash_local($str) {
         	return rtrim($str, "/");
@@ -35,7 +36,24 @@
  		public function on_message($message_forum_id, $message, $message_id, $sender_id, $recipient_id, $sender_name, $sender_email, $sender_phone)
         {
             global $cnf;
-            global $overflow_config;
+            
+            
+            if(!isset($this->overflow_config)) {
+				//Get global plugin config - but only once
+				$data = file_get_contents (dirname(__FILE__) . "/config/config.json");
+				if($data) {
+					$this->overflow_config = json_decode($data, true);
+					if(!isset($this->overflow_config)) {
+						error_log("Error: overflow config/config.json is not valid JSON.");
+						exit(0);
+					}
+	 
+				} else {
+					error_log("Error: Missing config/config.json in overflow plugin.");
+					exit(0);
+	 
+				}
+			}
             
             error_log("Testing:" . $overflow_config['triggerOverLimit']);
             
