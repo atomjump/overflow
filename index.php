@@ -19,7 +19,7 @@
     }
     
     
-    class plugin_medimage_export
+    class plugin_overflow
     {
         public $verbose = false;
      	
