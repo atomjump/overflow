@@ -207,7 +207,7 @@
 		echo "Preview mode ON\n";
 	}
 	
-	
+	echo "Label used: " . $_REQUEST['uniqueFeedbackId'] , "\n";
 	echo "Using database host: " .  $cnf['db']['hosts'][0] . "  name:" . $cnf['db']['name'] . "\n";
 		
 	$delete_forum = false;		
