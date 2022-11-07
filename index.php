@@ -134,6 +134,16 @@
             		}
             	}
             	
+            	
+            	//Get a current message count, in case the forum already exists
+            	$current_msg_count = 1;
+            	$sql = "SELECT COUNT(*) as record_count FROM tbl_ssshout WHERE int_layer_id = " . clean_data($message_forum_id) . " AND enm_active = 'true'";
+            	$result = $api->db_select($sql);
+				if($row = $api->db_fetch_array($result))
+				{
+					$current_msg_count = $row['record_count'];
+				}
+            	
             	//Create a new overflow entry for this forum
             	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, `int_max_messages`, `enm_due_trimming`) VALUES (NULL, " . clean_data($message_forum_id) . ", 1, " . clean_data($max_messages) . ",'false')";
             	$result = $api->db_select($sql);
