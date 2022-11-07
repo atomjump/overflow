@@ -37,7 +37,7 @@
             global $cnf;
             global $overflow_config;
             
-            echo "Testing:" . $overflow_config['triggerOverLimit'];
+            error_log("Testing:" . $overflow_config['triggerOverLimit']);
             
             $api = new cls_plugin_api();
                
