@@ -1,7 +1,7 @@
 <?php
     include_once("classes/cls.pluginapi.php");
     
-	if(!isset($overflow_config)) {
+	/*if(!isset($overflow_config)) {
         //Get global plugin config - but only once
 		$data = file_get_contents (dirname(__FILE__) . "/config/config.json");
         if($data) {
@@ -16,7 +16,7 @@
             exit(0);
      
         }
-    }
+    }*/
     
     
     class plugin_overflow
