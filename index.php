@@ -126,13 +126,15 @@
             		}
             	}
             	
-            	if(($this->overflow_config['privateForumLimit'])&&($type == "private")) {
+            	if((isset($this->overflow_config['privateForumLimit']))&&($type == "private")) {
             		if(is_null($this->overflow_config['privateForumLimit'])) {
             			$max_messages = "NULL";
             		} else {
             			$max_messages = $this->overflow_config['privateForumLimit'];
             		}
             	}
+            	
+            	error_log("Testing:" . $max_messages);
             	
             	
             	//Get a current message count, in case the forum already exists
