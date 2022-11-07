@@ -217,7 +217,8 @@
 			echo "Layer: " . $this_layer . "\n";
 			
 			//Get messages in the forum that are aged - sort by order inserted, up to the limit of the 
-			$messages_to_trim = $row['int_current_msg_cnt'] - $row['int_max_messages'];
+			$old_messages_cnt = $row['int_current_msg_cnt'];
+			$messages_to_trim = $old_messages_cnt - $row['int_max_messages'];
 			$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
 			$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
 			
@@ -283,9 +284,10 @@
 			}
 			
 			
-			//Write back the number of messages trimmed into the tbl_overflow record
+			//Write back the number of messages trimmed into the tbl_overflow record, reduce the count switch to 
 			$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
-			$api->db_update("tbl_overflow_check", "int_cnt_trimmed = " . $new_trimmed_cnt . " WHERE int_layer_id = " . $this_layer);
+			$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
+			$api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_messages_cnt . ", int_cnt_trimmed = " . $new_trimmed_cnt . ", enm_due_trimming = 'false' WHERE int_layer_id = " . $this_layer);
 		
 	} 
 		
