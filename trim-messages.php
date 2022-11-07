@@ -219,7 +219,7 @@
 			//Get messages in the forum that are aged - sort by order inserted, up to the limit of the 
 			$messages_to_trim = $row['int_current_msg_cnt'] - $row['int_max_messages'];
 			$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
-			$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer " ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
+			$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
 			
 			
 			//echo $sql . "\n";
