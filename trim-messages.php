@@ -206,6 +206,20 @@
 	if($preview == true) {
 		echo "Preview mode ON\n";
 	}
+	
+	
+	echo "Using database host: " .  $cnf['db']['hosts'][0] . "  name:" . $cnf['db']['name'] . "\n";
+		
+	$delete_forum = false;		
+	if(isset($cnf['db']['deleteDeletes'])) {
+		//Defaults to the server-defined option, unless..
+		$delete_forum = $cnf['db']['deleteDeletes'];
+	}
+	if(isset($overflow_config['deleteForum'])) {
+		//Unless we have an override in our local config
+		$delete_forum = $overflow_config['deleteForum'];	
+	}
+	
 
 	echo "Checking for layers due to be trimmed...\n";
 	$sql = "SELECT * FROM tbl_overflow_check WHERE enm_due_trimming = 'true'";
@@ -231,7 +245,7 @@
 				
 				global $cnf;
 				
-				//if($cnf['db']['deleteDeletes'] === true) {
+				if($delete_forum === true) {
 					
 					
 					//Search for any images in the message
@@ -272,19 +286,21 @@
 					}
 				
 				
-				/*} else {
+				} else {
 					echo "Deactivating. But leaving images.";
 					if($preview == false) {
 					   echo "Deactivating message " . $row_msg['int_ssshout_id'] . "\n";
 					   error_log("Deactivating message " . $row_msg['int_ssshout_id']);
 					   
 					   $api->db_update("tbl_ssshout", "enm_active = 'false' WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
+					} else {
+						echo "Would be deactivating message " . $row_msg['int_ssshout_id'] . "\n";
 					}
-				}*/
+				}
 			}
 			
 			
-			//Write back the number of messages trimmed into the tbl_overflow record, reduce the count switch to 
+			//Write back the number of messages trimmed into the tbl_overflow record, reduce the count, switch to 'not due a trimming'
 			$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
 			$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
 			$api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_messages_cnt . ", int_cnt_trimmed = " . $new_trimmed_cnt . ", enm_due_trimming = 'false' WHERE int_layer_id = " . $this_layer);
