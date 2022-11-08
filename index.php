@@ -54,7 +54,7 @@
             //Increment the count if a count already exists for this forum, else create a count and set as 1.  
             //When creating a count:
             //determine the type of forum and use the default message limit in the config file and set this in the db record.
-            //This can be manually adjusted in the database later, or TODO: have a user/admin facility for altering the max message count.
+            //This can be manually adjusted in the database later, or use the basic user/admin facility for altering the max message count.
             
             //Check the forum count exists
             $new_msg_cnt = 1;		//Default
@@ -68,6 +68,20 @@
             		//Set the new message count to be one greater than the current message count
             		$new_msg_cnt = $row['int_current_msg_cnt'] + 1;
             	}
+            	
+            	//Once in every 50 or so requests, do a refresh of the count from the actual number - this is necessary because
+            	//some plugins will not generate an 'on_message' event after a message has been entered e.g. the 'emoticons_large' plugin.
+            	if(rand(0,5) == 0) {		//TODO: user 5 for testing, 50 live
+		        	$sql = "SELECT COUNT(*) as record_count FROM tbl_ssshout WHERE int_layer_id = " . clean_data($message_forum_id) . " AND enm_active = 'true'";
+		        	$result = $api->db_select($sql);
+					if($row = $api->db_fetch_array($result))
+					{
+						$new_msg_cnt = $row['record_count'];
+					}
+				}
+					
+					
+            	 
             	
             	//Check if we are over the main message limit, and flag if so for future trimming.
             	if(isset($row['int_max_messages'])) {
