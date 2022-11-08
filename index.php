@@ -223,7 +223,7 @@
 		        		}
 				      } else {
 				      	error_log("uc_message = " . $uc_message .  " strpos result:" . strpos($uc_message, "UNLIMITED"));		//TESTING
-				      	if(strpos($uc_message, "UNLIMITED") === 0) {
+				      	if(strpos($uc_message, "UNLIMITED") >= 0) {
 				      		//Have entered 'overflow unlimited'. Trying to set this to an unlimited
 				      		$result = $api->db_update("tbl_overflow_check", "int_max_messages = NULL WHERE int_layer_id = " . clean_data($message_forum_id));	
 				      		$new_message = "You have successfully set the new overflow message count to being unlimited.";
