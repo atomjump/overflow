@@ -59,26 +59,10 @@
             global $cnf;
             
             
-            /*if(!isset($this->overflow_config)) {
-				//Get global plugin config - but only once
-				$data = file_get_contents (dirname(__FILE__) . "/config/config.json");
-				if($data) {
-					$this->overflow_config = json_decode($data, true);
-					if(!isset($this->overflow_config)) {
-						error_log("Error: overflow config/config.json is not valid JSON.");
-						exit(0);
-					}
-	 
-				} else {
-					error_log("Error: Missing config/config.json in overflow plugin.");
-					exit(0);
-	 
-				}
-			}*/
+          
             
-            if(!$overflow_config) return false;		//This shouldn't be here!! 
-            
-            error_log("Testing:" . $overflow_config['publicForumLimit']);
+           
+            error_log("After setting config:" . $overflow_config['publicForumLimit']);
             
             $api = new cls_plugin_api();
                
@@ -141,15 +125,22 @@
             	
             	$max_messages = 50;		//Default
             	
+            	error_log("Max messages before:" . $max_messages);
             	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
+            	
+            		error_log("Type = public. New max messages will be " . $overflow_config['publicForumLimit']);		//TESTING
+            	
             		if(is_null($overflow_config['publicForumLimit'])) {
             			$max_messages = "NULL";
             		} else {
-            			$max_messages = $this->$overflow_config['publicForumLimit'];
+            			$max_messages = $overflow_config['publicForumLimit'];
             		}
             	}
             	
             	if((isset($overflow_config['privateForumLimit']))&&($type == "private")) {
+            	
+            		error_log("Type = private. New max messages will be " . $overflow_config['privateForumLimit']);		//TESTING
+            	
             		if(is_null($overflow_config['privateForumLimit'])) {
             			$max_messages = "NULL";
             		} else {
@@ -158,7 +149,7 @@
             	}
             	
             	
-            	error_log("Testing:" . $max_messages);
+            	
             	
             	
             	//Get a current message count, in case the forum already exists
