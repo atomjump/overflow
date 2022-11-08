@@ -176,6 +176,19 @@
 				{
 					$current_msg_count = $row['record_count'];
 				}
+				
+				//Check the current message count is greater than 70% - in which case we need to warn the user that 
+				$seventy_perc_msg_num = intval(0.7 * $row['int_max_messages']);
+            	if($current_msg_count >= $seventy_perc_msg_num) {
+            		  $new_message = "You have over 70% of this forum's maximum messages (" . $row['int_max_messages'] . ") before we start trimming off older messages. If you want to save the older messages you can export them at any time.  To increase the maximum number of messages on the forum at once please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
+				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
+				      $sender_name_str = "AtomJump";
+				      $sender_email = "webmaster@atomjump.com";
+				      $sender_ip = "111.111.111.111";
+				      $options = array('notification' => false, 'allow_plugins' => false);
+				   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+            	}
+				
             	
             	//Create a new overflow entry for this forum
             	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, `int_max_messages`, `enm_due_trimming`) VALUES (NULL, " . clean_data($message_forum_id) . ", " . clean_data($current_msg_count) . ", " . clean_data($max_messages) . ",'false')";
