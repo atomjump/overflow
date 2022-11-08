@@ -106,6 +106,7 @@
             	//Check if we are over the 70% message limit for the 1st time in this forum (note: not future times), and
             	//display a note to the user of the limit.
             	$seventy_perc_msg_num = intval(0.7 * $row['int_max_messages']);
+            	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt . "  Cnt trimmed = " . $row['int_cnt_trimmed']);		//TESTING
             	if(($row['int_cnt_trimmed'] == 0)&&($new_msg_cnt == $seventy_perc_msg_num)) {
             		  $new_message = "You have reached 70% of this forum's maximum messages (" . $row['int_max_messages'] . ") before we start trimming off older messages. If you want to save the older messages you can export them at any time.  To increase the maximum number of messages on the forum at once please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
 				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
