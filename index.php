@@ -71,7 +71,7 @@
             	
             	//Once in every 50 or so requests, do a refresh of the count from the actual number - this is necessary because
             	//some plugins will not generate an 'on_message' event after a message has been entered e.g. the 'emoticons_large' plugin.
-            	if(rand(0,5) == 0) {		//TODO: user 5 for testing, 50 live
+            	if(rand(0,50) == 0) {		//Use 5 for testing, 50 for live
 		        	$sql = "SELECT COUNT(*) as record_count FROM tbl_ssshout WHERE int_layer_id = " . clean_data($message_forum_id) . " AND enm_active = 'true'";
 		        	$result = $api->db_select($sql);
 					if($row = $api->db_fetch_array($result))
