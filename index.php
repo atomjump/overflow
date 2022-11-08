@@ -1,24 +1,7 @@
 <?php
     include_once("classes/cls.pluginapi.php");
     
-	/*if(!isset($overflow_config)) {
-        //Get global plugin config - but only once
-		$data = file_get_contents (dirname(__FILE__) . "/config/config.json");
-        if($data) {
-            $overflow_config = json_decode($data, true);
-            if(!isset($overflow_config)) {
-                echo "Error: overflow config/config.json is not valid JSON.";
-                exit(0);
-            }
-     
-        } else {
-            echo "Error: Missing config/config.json in overflow plugin.";
-            exit(0);
-     
-        }
-    }*/
-    
-    
+   
     class plugin_overflow
     {
         public $verbose = false;
@@ -239,8 +222,14 @@
 		        			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
 		        		}
 				      } else {
-				      	//Have entered "OVERFLOW" but no number. Report the overflow count to the user
-				      	$new_message = "The current maximum is " . $max_messages . " messages at once, with older messages being deleted.  To increase the maximum number of messages on the forum, please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";
+				      	if(strpos($uc_message, "UNLIMITED") === 0) {
+				      		//Have entered 'overflow unlimited'. Trying to set this to an unlimited
+				      		$result = $api->db_update("tbl_overflow_check", "int_max_messages = NULL WHERE int_layer_id = " . clean_data($message_forum_id));	
+				      		$new_message = "You have successfully set the new overflow message count to being unlimited.";
+				      	} else {
+				      		//Have entered "overflow" but no number. Report the overflow count to the user
+				      		$new_message = "The current maximum is " . $max_messages . " messages at once, with older messages being deleted.  To increase the maximum number of messages on the forum, please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";
+				      	}
 				      }
 				    			      
 				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
