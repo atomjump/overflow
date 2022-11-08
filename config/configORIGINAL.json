@@ -7,5 +7,5 @@
 	"layerTitleDbOverride": null,
     "preview": false,
     "securityCode": "sample234ef4f-CHANGEME",
-    "urlPathToDeleteScript": "/api/plugins/remove_aged/remove-image.php"
+    "urlPathToDeleteScript": "/api/plugins/overflow/remove-image.php"
 }
