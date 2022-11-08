@@ -223,14 +223,14 @@
 	
 	echo "Using database host: " .  $db_cnf['hosts'][0] . "  name:" . $db_cnf['name'] . "\n";
 		
-	$delete_forum = false;		
+	$fully_delete = false;		
 	if(isset($db_cnf['deleteDeletes'])) {
 		//Defaults to the server-defined option, unless..
-		$delete_forum = $db_cnf['deleteDeletes'];
+		$fully_delete = $db_cnf['deleteDeletes'];
 	}
-	if(isset($overflow_config['deleteForum'])) {
+	if(isset($overflow_config['fullyDelete'])) {
 		//Unless we have an override in our local config
-		$delete_forum = $overflow_config['deleteForum'];	
+		$fully_delete = $overflow_config['fullyDelete'];	
 	}
 	
 
@@ -258,7 +258,7 @@
 				
 				global $cnf;
 				
-				if($delete_forum === true) {
+				if($fully_delete === true) {
 					
 					
 					//Search for any images in the message
