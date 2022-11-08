@@ -214,7 +214,7 @@
             	$uc_message = strtoupper($actual_message[1]);
             	if($this->verbose == true) error_log($uc_message);  
 		         	
-		        if(strpos($uc_message, "OVERFLOW ") === 0) {
+		        if(strpos($uc_message, "OVERFLOW") === 0) {
 				      //Check for messages starting with 'overflow [message cnt]', which
 				      $new_cnt = substr($actual_message[1], 9);		//Where 9 is string length of "OVERFLOW "
 				      $new_cnt = str_replace("\\r","", $new_cnt);
