@@ -76,6 +76,8 @@
 				}
 			}*/
             
+            if(!$overflow_config) return false;		//This shouldn't be here!! 
+            
             error_log("Testing:" . $overflow_config['publicForumLimit']);
             
             $api = new cls_plugin_api();
@@ -154,6 +156,7 @@
             			$max_messages = $overflow_config['privateForumLimit'];
             		}
             	}
+            	
             	
             	error_log("Testing:" . $max_messages);
             	
