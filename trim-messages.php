@@ -40,6 +40,7 @@
 	function delete_image($image_file, $image_folder, $preview = false) {
 		global $local_server_path;
 		global $cnf;
+		global $overflow_config;
 		
 		
 
@@ -129,6 +130,18 @@
 			
 				//Delete locally
 				$output = "Preparing to delete image: " . $image_folder . $image_file;
+				
+				//Now do this for each of the $cnf['ips'], call a delete_image script on each 
+				if(isset($overflow_config['urlPathToDeleteScript'])) {
+					for($cnt = 0; $cnt < count($cnf['ips']); $cnt++) {
+						$url = "http://" . $cnf['ips'][$cnt] . $overflow_config['urlPathToDeleteScript'] . "?code=" . $overflow_config['securityCode'] . "&imageName=" . $image_file;
+						echo "Running URL " . $url . " to delete image.\n";
+						if($preview !== true) {
+							file_get_contents($url);
+						}
+					}
+				}
+			
 				echo $output . "\n";
 				error_log($output);
 				if($preview !== true) {

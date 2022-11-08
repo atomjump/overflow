@@ -5,5 +5,7 @@
 	"privateForumLimit": 2000,
 	"triggerOverLimit": 10,
 	"layerTitleDbOverride": null,
-    "preview": false
+    "preview": false,
+    "securityCode": "sample234ef4f-CHANGEME",
+    "urlPathToDeleteScript": "/api/plugins/remove_aged/remove-image.php"
 }

@@ -24,6 +24,19 @@ Add an hourly (or some other timeframe) CRON entry for trim-messages.php e.g.
 	0 * * * *       /usr/bin/php /your_server_path/api/plugins/overflow/trim-messages.php
 ```
 
+Your AtomJump Messaging server's main .htaccess file:
+
+After 
+```
+RewriteRule image-exists - [L,PT]
+```
+this should be added to your AtomJump Messaging server's main .htaccess file:
+```
+#Get out of here early - we know we don't need further processing
+RewriteRule remove-image - [L,PT]
+```
+
+
 # Future development
 
 * Warning about message limit being hit
