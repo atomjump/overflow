@@ -204,7 +204,9 @@
             	
             	//Create a new overflow entry for this forum
             	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, `int_max_messages`, `enm_due_trimming`) VALUES (NULL, " . clean_data($message_forum_id) . ", " . clean_data($current_msg_count) . ", " . clean_data($max_messages) . ",'false')";
+            	
             	$result = $api->db_select($sql);
+            	$new_msg_count = $current_msg_count;		//Use this value below
             }
             
             
@@ -216,24 +218,24 @@
 		         	
 		        if(strpos($uc_message, "OVERFLOW") === 0) {
 				      //Check for messages starting with 'overflow [message cnt]', which
-				      $new_cnt = substr($actual_message[1], 9);		//Where 9 is string length of "OVERFLOW "
-				      $new_cnt = str_replace("\\r","", $new_cnt);
-				      $new_cnt = str_replace("\\n","", $new_cnt);
-				      $new_cnt = preg_replace('/\s+/', ' ', trim($new_cnt));
+				      $new_max_messages = substr($actual_message[1], 9);		//Where 9 is string length of "OVERFLOW "
+				      $new_max_messages = str_replace("\\r","", $new_max_messages);
+				      $new_max_messages = str_replace("\\n","", $new_max_messages);
+				      $new_max_messages = preg_replace('/\s+/', ' ', trim($new_max_messages));
 				      
 				    
-				      error_log("New cnt = " . $new_cnt);			//TESTING
+				      error_log("New max messages = " . $new_max_messages);			//TESTING
 				      
 				      //TODO: If this is less than the max a user can set from the config
 				      
 				      if(is_numeric($new_cnt)) {
 				      	//Set this to be the new overflow count
-				      	$result = $api->db_update("tbl_overflow_check", "int_max_messages = " . clean_data($new_cnt) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
-				      	$new_message = "You have successfully set the new overflow message count to " . $new_cnt . ".";
-				      	$seventy_perc_msg_num = intval(0.7 * ($new_cnt+$trigger_over_limit));
+				      	$result = $api->db_update("tbl_overflow_check", "int_max_messages = " . clean_data($new_max_messages) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
+				      	$new_message = "You have successfully set the new overflow message count to " . $new_max_messages . ".";
+				      	$seventy_perc_msg_num = intval(0.7 * ($new_max_messages+$trigger_over_limit));
 				      	
-				      	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt . "   Current message count = " . $current_msg_count);		//TESTING
-		        		if($current_msg_count >= $seventy_perc_msg_num) {
+				      	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt);		//TESTING
+		        		if($new_msg_count >= $seventy_perc_msg_num) {
 		        			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
 		        		}
 				      } else {
