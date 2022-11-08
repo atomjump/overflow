@@ -315,10 +315,11 @@
 				}
 			}
 			
+			$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
+			$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
 			if($preview == false) {
 				//Write back the number of messages trimmed into the tbl_overflow record, reduce the count, switch to 'not due a trimming'
-				$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
-				$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
+				
 				$api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_messages_cnt . ", int_cnt_trimmed = " . $new_trimmed_cnt . ", enm_due_trimming = 'false' WHERE int_layer_id = " . $this_layer);
 				echo "Set message cnt = " . $new_messages_cnt . ", trimmed cnt = " . $new_trimmed_cnt . " for layer " . $this_layer . "\n";
 			} else {
