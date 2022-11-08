@@ -231,6 +231,8 @@
 				      	$result = $api->db_update("tbl_overflow_check", "int_max_messages = " . clean_data($new_cnt) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
 				      	$new_message = "You have successfully set the new overflow message count to " . $new_cnt . ".";
 				      	$seventy_perc_msg_num = intval(0.7 * ($new_cnt+$trigger_over_limit));
+				      	
+				      	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt . "   Current message count = " . $current_msg_count);		//TESTING
 		        		if($current_msg_count >= $seventy_perc_msg_num) {
 		        			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
 		        		}
