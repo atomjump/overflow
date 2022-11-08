@@ -17,6 +17,8 @@
      
  		public function on_message($message_forum_id, $message, $message_id, $sender_id, $recipient_id, $sender_name, $sender_email, $sender_phone)
         {
+        	$returned_message = false;		//Whether we do a re-entrant call to process a new count, or not, after returning.
+        	
         	if(!isset($overflow_config)) {
                 //Get global plugin config - but only once
                 global $cnf;
@@ -101,6 +103,7 @@
 						  $sender_ip = "111.111.111.111";
 						  $options = array('notification' => false, 'allow_plugins' => false);
 					   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+					   	$returned_message = true;
 		        	}
 		        }
             	
@@ -181,6 +184,8 @@
 						  $sender_ip = "111.111.111.111";
 						  $options = array('notification' => false, 'allow_plugins' => false);
 					   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+					   	$returned_message = true;
+					   
 		        	}
 		        }
 				
@@ -239,9 +244,15 @@
 					  $sender_ip = "111.111.111.111";
 					  $options = array('notification' => false, 'allow_plugins' => false);
 					  $api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+					  $returned_message = true;
 				 }
 			}
 
+			if($returned_message == true) {
+			
+				//And register this message on our count, as another entry - but don't process any other plugins..
+				$this->on_message($message_forum_id, $new_message, $message_id, $sender_id, $recipient_id, $sender_name, $sender_email, $sender_phone);
+			}
             
             return true;
                 
