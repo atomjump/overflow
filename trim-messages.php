@@ -331,7 +331,13 @@
 			
 			$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify);
 			
-			//TODO: now remove the inactive messages (typically 'typing' etc.) up until the end of the last message
+			if($last_msg_id) {
+				//now remove the inactive messages (typically 'typing' etc.) up until the end of the last message
+				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = false AND int_ssshout_id < " . $last_msg_id . " ORDER BY int_ssshout_id";
+				trim_messages($api, $sql, $fully_delete, $preview, $notify);
+				//Note: these messages are not counted in the trimmed count.
+			}
+
 
 			$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
 			$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
