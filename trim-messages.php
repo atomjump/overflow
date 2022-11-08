@@ -164,6 +164,84 @@
 		
 	}    
     
+    
+    function trim_messages($api, $sql, $fully_delete, $preview, $notify) {
+    		
+    	//Trims a list of messages with a SQL command to define which ones.
+    	//Returns the message id of the last message processed (or null if there were none).
+    
+		//echo $sql . "\n";
+		
+		$last_msg_id = null;
+		
+		$result_msgs = $api->db_select($sql);
+		while($row_msg = $api->db_fetch_array($result_msgs))
+		{
+			echo "Message: " . $row_msg['var_shouted'] . "    ID:" . $row_msg['int_ssshout_id'] . "\n";
+			$last_msg_id = $row_msg['int_ssshout_id'];		//Store for the return value
+			
+			global $cnf;
+			
+			if($fully_delete === true) {
+				
+				
+				//Search for any images in the message
+				echo "Search term = " . $cnf['uploads']['replaceHiResURLMatch'] . "\n";
+				$url_matching = "ajmp";		//Works with Amazon based jpgs on atomjump.com which include ajmp.
+				if($cnf['uploads']['replaceHiResURLMatch']) $url_matching = $cnf['uploads']['replaceHiResURLMatch'];
+				
+				
+				$preg_search = "/.*?" . $url_matching ."(.*?)\.jpg/i";
+				preg_match_all($preg_search, $row_msg['var_shouted'], $matches);
+			
+				
+					
+				if(count($matches) > 1) {
+					//Yes we have at least one image
+					for($cnt = 0; $cnt < count($matches[1]); $cnt++) {
+						echo "Matched image raw: " . $matches[1][$cnt] . "\n";
+						$between_slashes = explode( "/", $matches[1][$cnt]);
+						$len = count($between_slashes) - 1;
+						$image_name = $between_slashes[$len] . ".jpg";
+						$image_hi_name = $between_slashes[$len] . "_HI.jpg";
+						echo "Image name: " . $image_name . "\n";
+			
+			
+						//Delete this image
+						delete_image($image_name, $image_folder, $preview);
+						delete_image($image_hi_name, $image_folder, $preview);
+					}
+				}
+				
+				
+				//Delete the record
+				if($preview == false) {
+					echo "Deleting message " . $row_msg['int_ssshout_id'] . "\n";
+					error_log("Deleting message " . $row_msg['int_ssshout_id']);
+					$sql_del = "DELETE FROM tbl_ssshout WHERE int_ssshout_id = " . $row_msg['int_ssshout_id'];
+					$api->db_select($sql_del);
+				} else {
+					echo "Would be deleting message " . $row_msg['int_ssshout_id'] . "\n";
+				
+				}
+			
+			
+			} else {
+				echo "Deactivating. But leaving images.";
+				if($preview == false) {
+				   echo "Deactivating message " . $row_msg['int_ssshout_id'] . "\n";
+				   error_log("Deactivating message " . $row_msg['int_ssshout_id']);
+				   
+				   $api->db_update("tbl_ssshout", "enm_active = 'false' WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
+				} else {
+					echo "Would be deactivating message " . $row_msg['int_ssshout_id'] . "\n";
+				}
+			}
+		}
+	
+		return $last_msg_id;
+	}
+    
 
 
 	if(!isset($overflow_config)) {
@@ -251,72 +329,10 @@
 			$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
 			$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = true ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
 			
+			$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify);
 			
-			//echo $sql . "\n";
-			$result_msgs = $api->db_select($sql);
-			while($row_msg = $api->db_fetch_array($result_msgs))
-			{
-				echo "Message: " . $row_msg['var_shouted'] . "    ID:" . $row_msg['int_ssshout_id'] . "\n";
-				
-				global $cnf;
-				
-				if($fully_delete === true) {
-					
-					
-					//Search for any images in the message
-					echo "Search term = " . $cnf['uploads']['replaceHiResURLMatch'] . "\n";
-					$url_matching = "ajmp";		//Works with Amazon based jpgs on atomjump.com which include ajmp.
-					if($cnf['uploads']['replaceHiResURLMatch']) $url_matching = $cnf['uploads']['replaceHiResURLMatch'];
-					
-					
-					$preg_search = "/.*?" . $url_matching ."(.*?)\.jpg/i";
-					preg_match_all($preg_search, $row_msg['var_shouted'], $matches);
-				
-					
-						
-					if(count($matches) > 1) {
-						//Yes we have at least one image
-						for($cnt = 0; $cnt < count($matches[1]); $cnt++) {
-							echo "Matched image raw: " . $matches[1][$cnt] . "\n";
-							$between_slashes = explode( "/", $matches[1][$cnt]);
-							$len = count($between_slashes) - 1;
-							$image_name = $between_slashes[$len] . ".jpg";
-							$image_hi_name = $between_slashes[$len] . "_HI.jpg";
-							echo "Image name: " . $image_name . "\n";
-				
-				
-							//Delete this image
-							delete_image($image_name, $image_folder, $preview);
-							delete_image($image_hi_name, $image_folder, $preview);
-						}
-					}
-					
-					
-					//Delete the record
-					if($preview == false) {
-						echo "Deleting message " . $row_msg['int_ssshout_id'] . "\n";
-						error_log("Deleting message " . $row_msg['int_ssshout_id']);
-						$sql_del = "DELETE FROM tbl_ssshout WHERE int_ssshout_id = " . $row_msg['int_ssshout_id'];
-						$api->db_select($sql_del);
-					} else {
-						echo "Would be deleting message " . $row_msg['int_ssshout_id'] . "\n";
-					
-					}
-				
-				
-				} else {
-					echo "Deactivating. But leaving images.";
-					if($preview == false) {
-					   echo "Deactivating message " . $row_msg['int_ssshout_id'] . "\n";
-					   error_log("Deactivating message " . $row_msg['int_ssshout_id']);
-					   
-					   $api->db_update("tbl_ssshout", "enm_active = 'false' WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
-					} else {
-						echo "Would be deactivating message " . $row_msg['int_ssshout_id'] . "\n";
-					}
-				}
-			}
-			
+			//TODO: now remove the inactive messages (typically 'typing' etc.) up until the end of the last message
+
 			$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
 			$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
 			if($preview == false) {
