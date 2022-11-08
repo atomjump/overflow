@@ -22,8 +22,7 @@
     class plugin_overflow
     {
         public $verbose = false;
-        public $overflow_config;
-     	
+       
      	private function trim_trailing_slash_local($str) {
         	return rtrim($str, "/");
     	}
@@ -35,10 +34,32 @@
      
  		public function on_message($message_forum_id, $message, $message_id, $sender_id, $recipient_id, $sender_name, $sender_email, $sender_phone)
         {
+        	if(!isset($overflow_config)) {
+                //Get global plugin config - but only once
+                global $cnf;
+                
+                $path = dirname(__FILE__) . "/config/config.json";
+                
+                
+	            $data = file_get_contents($path);
+	            
+                if($data) {
+                    $overflow_config = json_decode($data, true);
+                    if(!isset($overflow_config)) {
+                        echo "Error: overflow config/config.json is not valid JSON.";
+                        exit(0);
+                    }
+                } else {
+                    echo "Error: Missing config/config.json in overflow plugin.";
+                    exit(0);
+                }
+            }
+        
+        
             global $cnf;
             
             
-            if(!isset($this->overflow_config)) {
+            /*if(!isset($this->overflow_config)) {
 				//Get global plugin config - but only once
 				$data = file_get_contents (dirname(__FILE__) . "/config/config.json");
 				if($data) {
@@ -53,9 +74,9 @@
 					exit(0);
 	 
 				}
-			}
+			}*/
             
-            error_log("Testing:" . $this->overflow_config['publicForumLimit']);
+            error_log("Testing:" . $overflow_config['publicForumLimit']);
             
             $api = new cls_plugin_api();
                
@@ -79,8 +100,8 @@
             	
             	if(isset($row['int_max_messages'])) {
             		$trigger_over_limit = 10;	//default
-            		if($this->overflow_config['triggerOverLimit']) {
-            			$trigger_over_limit = $this->overflow_config['triggerOverLimit'];
+            		if($overflow_config['triggerOverLimit']) {
+            			$trigger_over_limit = $overflow_config['triggerOverLimit'];
             		}
             		
          		 	//If this count is beyond the forum limit, flag the forum as being "due a trimming". It will be trimmed on the next CRON run.
@@ -118,19 +139,19 @@
             	
             	$max_messages = 50;		//Default
             	
-            	if((isset($this->overflow_config['publicForumLimit']))&&($type == "public")) {
-            		if(is_null($this->overflow_config['publicForumLimit'])) {
+            	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
+            		if(is_null($overflow_config['publicForumLimit'])) {
             			$max_messages = "NULL";
             		} else {
             			$max_messages = $this->$overflow_config['publicForumLimit'];
             		}
             	}
             	
-            	if((isset($this->overflow_config['privateForumLimit']))&&($type == "private")) {
-            		if(is_null($this->overflow_config['privateForumLimit'])) {
+            	if((isset($overflow_config['privateForumLimit']))&&($type == "private")) {
+            		if(is_null($overflow_config['privateForumLimit'])) {
             			$max_messages = "NULL";
             		} else {
-            			$max_messages = $this->overflow_config['privateForumLimit'];
+            			$max_messages = $overflow_config['privateForumLimit'];
             		}
             	}
             	
