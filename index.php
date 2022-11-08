@@ -235,7 +235,7 @@
 				      	$seventy_perc_msg_num = intval(0.7 * ($new_max_messages+$trigger_over_limit));
 				      	
 				      	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt);		//TESTING
-		        		if($new_msg_count >= $seventy_perc_msg_num) {
+		        		if($new_msg_cnt >= $seventy_perc_msg_num) {
 		        			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
 		        		}
 				      } else {
