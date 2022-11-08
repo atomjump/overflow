@@ -181,7 +181,7 @@
 				//Check the current message count is greater than 70% - in which case we need to warn the user that 
 				$seventy_perc_msg_num = intval(0.7 * ($row['int_max_messages']+$trigger_over_limit));
             	if($current_msg_count >= $seventy_perc_msg_num) {
-            		  $new_message = "You have over 70% of this forum's maximum messages (" . $row['int_max_messages'] . ") before we start trimming off older messages. If you want to save the older messages you can export them at any time.  To increase the maximum number of messages on the forum at once please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
+            		  $new_message = "You have over 70% of this forum's maximum messages (" . $max_messages . ") before we start trimming off older messages. If you want to save the older messages you can export them at any time.  To increase the maximum number of messages on the forum at once please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
 				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
 				      $sender_name_str = "AtomJump";
 				      $sender_email = "webmaster@atomjump.com";
