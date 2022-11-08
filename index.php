@@ -221,13 +221,12 @@
 				      $new_cnt = str_replace("\\n","", $new_cnt);
 				      $new_cnt = preg_replace('/\s+/', ' ', trim($new_cnt));
 				      
-				      $int_new_cnt = intval($new_cnt);
-				      
+				    
 				      error_log("New cnt = " . $new_cnt);			//TESTING
 				      
 				      //TODO: If this is less than the max a user can set from the config
 				      
-				      if(is_integer($new_cnt)) {
+				      if(is_numeric($new_cnt)) {
 				      	//Set this to be the new overflow count
 				      	$result = $api->db_update("tbl_overflow_check", "int_max_messages = " . clean_data($new_cnt) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
 				      	$new_message = "You have successfully set the new overflow message count to " . $new_cnt . ".";
