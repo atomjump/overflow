@@ -84,6 +84,7 @@
             		$new_msg_cnt = $row['int_current_msg_cnt'] + 1;
             	}
             	
+            	//Check if we are over the main message limit, and flag if so for future trimming.
             	if(isset($row['int_max_messages'])) {
             		$trigger_over_limit = 10;	//default
             		if($overflow_config['triggerOverLimit']) {
@@ -101,10 +102,25 @@
             		$due_a_trimming = "false";
             	}
             	
+            	
+            	//Check if we are over the 70% message limit for the 1st time in this forum (note: not future times), and
+            	//display a note to the user of the limit.
+            	$seventy_perc_msg_num = intval(0.7 * $row['int_max_messages']);
+            	if(($row['int_cnt_trimmed'] == 0)&&($new_msg_cnt == $seventy_perc_msg_num)) {
+            		  $new_message = "You have reached 70% of this forum's maximum messages (" . $row['int_max_messages'] . ") before we start trimming off older messages. If you want to save the older messages you can export them at any time.  To increase the maximum number of messages on the forum at once please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
+				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
+				      $sender_name_str = "AtomJump";
+				      $sender_email = "webmaster@atomjump.com";
+				      $sender_ip = "111.111.111.111";
+				      $options = array('notification' => false, 'allow_plugins' => false);
+				   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+            	}
+            	
             	//Set the new message count, and the 'due a trimming' flag
             	$result = $api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_msg_cnt . ",enm_due_trimming = '" . $due_a_trimming . "' WHERE int_layer_id = " . clean_data($message_forum_id));		
            
             } else {
+            	//There is no existing overflow record for this forum.
             	//Check what type of forum this is, public or private.
             	//If tbl_layer field 'var_public_code' is set then it is a 'private forum', in this sense (as it has a password access).
             	//A NULL 'var_public_code' means it is a purely 'public forum' in this sense.
