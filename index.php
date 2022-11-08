@@ -189,7 +189,7 @@
 				
 				//Check the current message count is greater than 70% - in which case we need to warn the user that 
 				if($max_messages) {
-					$seventy_perc_msg_num = intval(0.7 * ($row['int_max_messages']+$trigger_over_limit));
+					$seventy_perc_msg_num = intval(0.7 * ($max_messages+$trigger_over_limit));
 		        	if($current_msg_count >= $seventy_perc_msg_num) {
 		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
 						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
@@ -230,6 +230,10 @@
 				      	//Set this to be the new overflow count
 				      	$result = $api->db_update("tbl_overflow_check", "int_max_messages = " . clean_data($new_cnt) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
 				      	$new_message = "You have successfully set the new overflow message count to " . $new_cnt . ".";
+				      	$seventy_perc_msg_num = intval(0.7 * ($new_cnt+$trigger_over_limit));
+		        		if($current_msg_count >= $seventy_perc_msg_num) {
+		        			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
+		        		}
 				      } else {
 				      	//Have entered "OVERFLOW" but no number. Report the overflow count to the user
 				      	$new_message = "The current maximum is " . $max_messages . " messages at once, with older messages being deleted.  To increase the maximum number of messages on the forum, please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";
