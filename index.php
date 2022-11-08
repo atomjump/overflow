@@ -222,6 +222,7 @@
 		        			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
 		        		}
 				      } else {
+				      	error_log("uc_message = " . $uc_message .  " strpos result:" . strpos($uc_message, "UNLIMITED"));		//TESTING
 				      	if(strpos($uc_message, "UNLIMITED") === 0) {
 				      		//Have entered 'overflow unlimited'. Trying to set this to an unlimited
 				      		$result = $api->db_update("tbl_overflow_check", "int_max_messages = NULL WHERE int_layer_id = " . clean_data($message_forum_id));	
