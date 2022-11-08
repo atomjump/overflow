@@ -232,12 +232,12 @@
 				      	$new_message = "The current maximum is " . $max_messages . " messages at once, with older messages being deleted.  To increase the maximum number of messages on the forum, please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";
 				      }
 				    			      
-				      recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
-						  $sender_name_str = "AtomJump";
-						  $sender_email = "webmaster@atomjump.com";
-						  $sender_ip = "111.111.111.111";
-						  $options = array('notification' => false, 'allow_plugins' => false);
-					   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
+					  $sender_name_str = "AtomJump";
+					  $sender_email = "webmaster@atomjump.com";
+					  $sender_ip = "111.111.111.111";
+					  $options = array('notification' => false, 'allow_plugins' => false);
+					  $api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
 				 }
 			}
 
