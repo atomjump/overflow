@@ -233,6 +233,8 @@
 		$fully_delete = $overflow_config['fullyDelete'];	
 	}
 	
+	echo "Fully deleting: " . $fully_delete . "\n";
+	
 
 	echo "Checking for layers due to be trimmed...\n";
 	$sql = "SELECT * FROM tbl_overflow_check WHERE enm_due_trimming = 'true'";
