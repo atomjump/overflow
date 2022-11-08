@@ -221,6 +221,8 @@
 				      $new_cnt = str_replace("\\n","", $new_cnt);
 				      $new_cnt = preg_replace('/\s+/', ' ', trim($new_cnt));
 				      
+				      error_log("New cnt = " . $new_cnt);			//TESTING
+				      
 				      //TODO: If this is less than the max a user can set from the config
 				      
 				      if(is_integer($new_cnt)) {
