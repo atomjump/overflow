@@ -14,6 +14,93 @@
         	//Remove and then add
         	return rtrim($str, "/") . '/';
    		}  
+   		
+   		
+   		private $max_messages;			//E.g. 50, or null for unlimited
+   		private $max_messages_disp;		//E.g. "50" or "NULL" for unlimited
+   		private $max_user_set_limit;	//E.g. 400, or null for unlimited
+   		private $max_user_set_limit_disp;	//E.g. 400, or "NULL" for unlimited
+   		
+   		private function get_max_messages($api, $overflow_config, $message_forum_id) {
+   				//Sets the 4 private member variables
+	   			/*
+	   			  	private $default_max_messages;
+	   				private $default_max_messages_disp;			
+	   				private $max_user_set_limit;
+	   				private $max_user_set_limit_disp;
+   				*/
+   			
+            	//Check what type of forum this is, public or private.
+            	//If tbl_layer field 'var_public_code' is set then it is a 'private forum', in this sense (as it has a password access).
+            	//A NULL 'var_public_code' means it is a purely 'public forum' in this sense.
+            	$type = "public";
+            	$sql = "SELECT var_public_code FROM tbl_layer WHERE int_layer_id = " . clean_data($message_forum_id);
+		        $result = $api->db_select($sql);
+				if($row = $api->db_fetch_array($result))
+				{
+					if(isset($row['var_public_code'])) {
+						//I.e. not a null value
+							$type = "private";
+					}
+				}
+				//Note: if the status of this forum changes from private to public or vica-versa, this value will not be automatically
+				//updated. You would still need to update the tbl_overflow_check table specifically.
+            	
+            	
+            	
+            	$max_messages = 50;		//Default
+            	$max_messages_disp = 50;		//Default
+            	
+            	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
+            	
+            	
+            		if(is_null($overflow_config['publicForumLimit'])) {
+            			$this->default_max_messages = null;
+            			$this->default_max_messages_disp = "NULL";
+            		} else {
+            			$this->default_max_messages = $overflow_config['publicForumLimit'];
+            			$this->default_max_messages_disp = $this->max_messages;
+            		}
+            	}
+            	
+            	if((isset($overflow_config['privateForumLimit']))&&($type == "private")) {
+            	
+            	
+            		if(is_null($overflow_config['privateForumLimit'])) {
+            			$this->default_max_messages = null;
+            			$this->default_max_messages_disp = "NULL";
+            		} else {
+            			$this->default_max_messages = $overflow_config['privateForumLimit'];
+            			$this->default_max_messages_disp = $this->max_messages;
+            		}
+            	}
+            	
+            	if((isset($overflow_config['publicMaxUserSetLimit']))&&($type == "public")) {
+            	
+            	
+            		if(is_null($overflow_config['publicMaxUserSetLimit'])) {
+            			$this->max_user_set_limit = null;
+            			$this->max_user_set_limit_disp = "NULL";
+            		} else {
+            			$this->max_user_set_limit = $overflow_config['publicMaxUserSetLimit'];
+            			$this->max_user_set_limit_disp = $this->max_user_set_limit;
+            		}
+            	}
+            	
+            	if((isset($overflow_config['privateMaxUserSetLimit']))&&($type == "private")) {
+            	
+            	
+            		if(is_null($overflow_config['privateMaxUserSetLimit'])) {
+            			$this->max_user_set_limit = null;
+            			$this->max_user_set_limit_disp = "NULL";
+            		} else {
+            			$this->max_user_set_limit = $overflow_config['privateMaxUserSetLimit'];
+            			$this->max_user_set_limit_disp = $this->max_user_set_limit;
+            		}
+            	}
+            	
+            	return;   		
+   		}
      
  		public function on_message($message_forum_id, $message, $message_id, $sender_id, $recipient_id, $sender_name, $sender_email, $sender_phone)
         {
@@ -219,7 +306,14 @@
             	if($this->verbose == true) error_log($uc_message);  
 		         	
 		        if(strpos($uc_message, "OVERFLOW") === 0) {
-				      //Check for messages starting with 'overflow [message cnt]', which
+		        	  //Found a message starting with e.g. 'overflow [message cnt]'. The 0 means the position is at char 0.
+				      
+				      
+				      //Check whether this has been sent by the admin user
+				      $ly = new cls_layer(); 				
+	 				  $is_admin = $ly->is_admin($sender_id);	//Note: in future versions (with messaging server >= 3.2.2),
+	 				  											// we should just use the API call for this.
+				      
 				      $new_max_messages = substr($actual_message[1], 9);		//Where 9 is string length of "OVERFLOW "
 				      $new_max_messages = str_replace("\\r","", $new_max_messages);
 				      $new_max_messages = str_replace("\\n","", $new_max_messages);
@@ -228,24 +322,48 @@
 				    
 				      error_log("New max messages = " . $new_max_messages);			//TESTING
 				      
-				      //TODO: If this is less than the max a user can set from the config
+				      //If this is less than the max a user can set from the config, we shouldn't set the value, unless they are
+				      //the admin user.
+				      
+				       $this->get_max_messages($api, $overflow_config, $message_forum_id);		
+				       //This call sets $this->$default_max_messages, $default_max_messages_disp, $max_user_set_limit, $max_user_set_limit_disp;
+				      		 
+				     
 				      
 				      if(is_numeric($new_max_messages)) {
-				      	//Set this to be the new overflow count
-				      	$result = $api->db_update("tbl_overflow_check", "int_max_messages = " . clean_data($new_max_messages) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
-				      	$new_message = "You have successfully set the new overflow message count to " . $new_max_messages . ".";
-				      	$seventy_perc_msg_num = intval(0.7 * ($new_max_messages+$trigger_over_limit));
 				      	
-				      	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt);		//TESTING
-		        		if($new_msg_cnt >= $seventy_perc_msg_num) {
-		        			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
-		        		}
+				      	if(($is_admin == true)||			//admin user
+				      		($this->max_user_set_limit == null)||		//there is no limit on setting a maximum for users
+				      		(($new_max_messages > $max_messages)&&($new_max_messages <= $this->max_user_set_limit)) {
+				      										//or, the limit is larger than before, and less than the limit that users can use.
+				      										//Note: a general user shouldn't be able to reduce the max, because this
+				      										//could lead to it being used to fully delete other people's messages on the forum
+				      
+						  	//Set this to be the new overflow count
+						  	$result = $api->db_update("tbl_overflow_check", "int_max_messages = " . clean_data($new_max_messages) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
+						  	$new_message = "You have successfully set the new overflow message count to " . $new_max_messages . ".";
+						  	$seventy_perc_msg_num = intval(0.7 * ($new_max_messages+$trigger_over_limit));
+						  	
+						  	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt);		//TESTING
+				    		if($new_msg_cnt >= $seventy_perc_msg_num) {
+				    			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
+				    		}
+				    	} else {
+				    		//Not authorised to set this new value.
+				    		$new_message = "Sorry, you cannot decrease the maximum messages count, or go past the limit of " . $this->max_user_set_limit . " messages. You can contact your Admin user to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];				    	
+				    	}
 				      } else {
 				      	error_log("uc_message = " . $uc_message .  " strpos result:" . strpos($uc_message, "UNLIMITED"));		//TESTING
 				      	if(strpos($uc_message, "UNLIMITED") >= 0) {
-				      		//Have entered 'overflow unlimited'. Trying to set this to an unlimited
-				      		$result = $api->db_update("tbl_overflow_check", "int_max_messages = NULL WHERE int_layer_id = " . clean_data($message_forum_id));	
-				      		$new_message = "You have successfully set the new overflow message count to being unlimited.";
+				      		//Have entered 'overflow unlimited'. Trying to set this to an unlimited				      		 
+				      		 if(($is_admin == true)||($this->max_user_set_limit == null)) {
+				      			//Authorised to do this
+				      			$result = $api->db_update("tbl_overflow_check", "int_max_messages = NULL WHERE int_layer_id = " . clean_data($message_forum_id));	
+				      			$new_message = "You have successfully set the new overflow message count to being unlimited.";
+				      		} else {
+				      			//Not authorised
+				      			$new_message = "Sorry, you could not set the new overflow message count to being unlimited. " . $overflow_config ['contactAdminToRemoveLimits'];
+				      		}
 				      	} else {
 				      		//Have entered "overflow" but no number. Report the overflow count to the user
 				      		$new_message = "The current maximum is " . $max_messages . " messages at once, with older messages being deleted.  To increase the maximum number of messages on the forum, please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";
