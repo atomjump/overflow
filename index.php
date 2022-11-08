@@ -86,36 +86,40 @@
             	
             	//Check if we are over the main message limit, and flag if so for future trimming.
             	if(isset($row['int_max_messages'])) {
+            		$max_messages = $row['int_max_messages'];
             		$trigger_over_limit = 10;	//default
             		if($overflow_config['triggerOverLimit']) {
             			$trigger_over_limit = $overflow_config['triggerOverLimit'];
             		}
             		
          		 	//If this count is beyond the forum limit, flag the forum as being "due a trimming". It will be trimmed on the next CRON run.
-            		if($new_msg_cnt > ($row['int_max_messages'] + $trigger_over_limit)) {
+            		if($new_msg_cnt > ($max_messages + $trigger_over_limit)) {
             			//Need to flag as 'due for a trimming'
             			$due_a_trimming = "true";
             		
             		}
             	} else {
             		//A null max messages - no limit - never trim
+            		$max_messages = null;
             		$due_a_trimming = "false";
             	}
             	
             	
             	//Check if we are over the 70% message limit for the 1st time in this forum (note: not future times), and
             	//display a note to the user of the limit.
-            	$seventy_perc_msg_num = intval(0.7 * ($row['int_max_messages']+$trigger_over_limit));
-            	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt . "  Cnt trimmed = " . $row['int_cnt_trimmed']);		//TESTING
-            	if(($row['int_cnt_trimmed'] == 0)&&($new_msg_cnt == $seventy_perc_msg_num)) {
-            		  $new_message = "Warning! This forum only keeps the latest " . $row['int_max_messages'] . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
-				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
-				      $sender_name_str = "AtomJump";
-				      $sender_email = "webmaster@atomjump.com";
-				      $sender_ip = "111.111.111.111";
-				      $options = array('notification' => false, 'allow_plugins' => false);
-				   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
-            	}
+            	if($max_messages) {
+		        	$seventy_perc_msg_num = intval(0.7 * ($max_messages+$trigger_over_limit));
+		        	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt . "  Cnt trimmed = " . $row['int_cnt_trimmed']);		//TESTING
+		        	if(($row['int_cnt_trimmed'] == 0)&&($new_msg_cnt == $seventy_perc_msg_num)) {
+		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
+						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
+						  $sender_name_str = "AtomJump";
+						  $sender_email = "webmaster@atomjump.com";
+						  $sender_ip = "111.111.111.111";
+						  $options = array('notification' => false, 'allow_plugins' => false);
+					   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+		        	}
+		        }
             	
             	//Set the new message count, and the 'due a trimming' flag
             	$result = $api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_msg_cnt . ",enm_due_trimming = '" . $due_a_trimming . "' WHERE int_layer_id = " . clean_data($message_forum_id));		
@@ -141,6 +145,7 @@
             	
             	
             	$max_messages = 50;		//Default
+            	$max_messages_disp = 50;		//Default
             	
             	error_log("Max messages before:" . $max_messages);
             	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
@@ -148,9 +153,11 @@
             		error_log("Type = public. New max messages will be " . $overflow_config['publicForumLimit']);		//TESTING
             	
             		if(is_null($overflow_config['publicForumLimit'])) {
-            			$max_messages = "NULL";
+            			$max_messages = null;
+            			$max_messages_disp = "NULL";
             		} else {
             			$max_messages = $overflow_config['publicForumLimit'];
+            			$max_messages_disp = $max_messages;
             		}
             	}
             	
@@ -159,9 +166,11 @@
             		error_log("Type = private. New max messages will be " . $overflow_config['privateForumLimit']);		//TESTING
             	
             		if(is_null($overflow_config['privateForumLimit'])) {
-            			$max_messages = "NULL";
+            			$max_messages = null;
+            			$max_messages_disp = "NULL";
             		} else {
             			$max_messages = $overflow_config['privateForumLimit'];
+            			$max_messages_disp = $max_messages;
             		}
             	}
             	
@@ -179,22 +188,59 @@
 				}
 				
 				//Check the current message count is greater than 70% - in which case we need to warn the user that 
-				$seventy_perc_msg_num = intval(0.7 * ($row['int_max_messages']+$trigger_over_limit));
-            	if($current_msg_count >= $seventy_perc_msg_num) {
-            		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
-				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
-				      $sender_name_str = "AtomJump";
-				      $sender_email = "webmaster@atomjump.com";
-				      $sender_ip = "111.111.111.111";
-				      $options = array('notification' => false, 'allow_plugins' => false);
-				   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
-            	}
+				if($max_messages) {
+					$seventy_perc_msg_num = intval(0.7 * ($row['int_max_messages']+$trigger_over_limit));
+		        	if($current_msg_count >= $seventy_perc_msg_num) {
+		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
+						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
+						  $sender_name_str = "AtomJump";
+						  $sender_email = "webmaster@atomjump.com";
+						  $sender_ip = "111.111.111.111";
+						  $options = array('notification' => false, 'allow_plugins' => false);
+					   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+		        	}
+		        }
 				
             	
             	//Create a new overflow entry for this forum
             	$sql = "INSERT INTO tbl_overflow_check ( `int_overflow_id`,  `int_layer_id`, `int_current_msg_cnt`, `int_max_messages`, `enm_due_trimming`) VALUES (NULL, " . clean_data($message_forum_id) . ", " . clean_data($current_msg_count) . ", " . clean_data($max_messages) . ",'false')";
             	$result = $api->db_select($sql);
             }
+            
+            
+            //Check for incoming user configuration messages
+            $actual_message = explode(": ", $message);			//Remove name of sender         
+            if($actual_message[1]) {
+            	$uc_message = strtoupper($actual_message[1]);
+            	if($this->verbose == true) error_log($uc_message);  
+		         	
+		        if(strpos($uc_message, "OVERFLOW ") === 0) {
+				      //Check for messages starting with 'overflow [message cnt]', which
+				      $new_cnt = substr($actual_message[1], 9);		//Where 9 is string length of "OVERFLOW "
+				      $new_cnt = str_replace("\\r","", $new_cnt);
+				      $new_cnt = str_replace("\\n","", $new_cnt);
+				      $new_cnt = preg_replace('/\s+/', ' ', trim($new_cnt));
+				      
+				      //TODO: If this is less than the max a user can set from the config
+				      
+				      if($new_cnt) {
+				      	//Set this to be the new overflow count
+				      	$result = $api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . clean_data($new_cnt) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
+				      	$new_message = "You have successfully set the new overflow message count to " . $new_cnt . ".";
+				      } else {
+				      	//Have entered "OVERFLOW" but no number. Report the overflow count to the user
+				      	$new_message = "The current maximum is " . $max_messages . " messages at once, with older messages being deleted.  To increase the maximum number of messages on the forum, please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";
+				      }
+				    			      
+				      recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
+						  $sender_name_str = "AtomJump";
+						  $sender_email = "webmaster@atomjump.com";
+						  $sender_ip = "111.111.111.111";
+						  $options = array('notification' => false, 'allow_plugins' => false);
+					   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+				 }
+			}
+
             
             return true;
                 
