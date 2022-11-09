@@ -218,27 +218,34 @@
 				}
 				
 				
-				//Delete the record
-				if($preview == false) {
-					echo "Deleting message " . $row_msg['int_ssshout_id'] . "\n";
-					error_log("Deleting message " . $row_msg['int_ssshout_id']);
-					$sql_del = "DELETE FROM tbl_ssshout WHERE int_ssshout_id = " . $row_msg['int_ssshout_id'];
-					$api->db_select($sql_del);
-				} else {
-					echo "Would be deleting message " . $row_msg['int_ssshout_id'] . "\n";
-				
+				if($blur == false) {
+					//Delete the record
+					if(($preview == false)) {
+					
+						echo "Deleting message " . $row_msg['int_ssshout_id'] . "\n";
+						error_log("Deleting message " . $row_msg['int_ssshout_id']);
+						$sql_del = "DELETE FROM tbl_ssshout WHERE int_ssshout_id = " . $row_msg['int_ssshout_id'];
+						$api->db_select($sql_del);
+					} else {
+						echo "Would be deleting message " . $row_msg['int_ssshout_id'] . "\n";
+					
+					}
 				}
 			
 			
 			} else {
-				echo "Deactivating. But leaving images.";
-				if($preview == false) {
-				   echo "Deactivating message " . $row_msg['int_ssshout_id'] . "\n";
-				   error_log("Deactivating message " . $row_msg['int_ssshout_id']);
-				   
-				   $api->db_update("tbl_ssshout", "enm_active = 'false' WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
+				if($blur == true) {
+					echo "Blurring image.";
 				} else {
-					echo "Would be deactivating message " . $row_msg['int_ssshout_id'] . "\n";
+					echo "Deactivating. But leaving images.";
+					if($preview == false) {
+					   echo "Deactivating message " . $row_msg['int_ssshout_id'] . "\n";
+					   error_log("Deactivating message " . $row_msg['int_ssshout_id']);
+					   
+					   $api->db_update("tbl_ssshout", "enm_active = 'false' WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
+					} else {
+						echo "Would be deactivating message " . $row_msg['int_ssshout_id'] . "\n";
+					}
 				}
 			}
 		}
