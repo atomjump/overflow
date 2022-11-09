@@ -363,7 +363,13 @@
 				    		}
 				    	} else {
 				    		//Not authorised to set this new value.
-				    		$new_message = "Sorry, you cannot decrease the overflow count to below " . $max_messages . " messages, or set this above a maximum of " . $this->max_user_set_limit . " messages. You can contact your System Admin to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];				    	
+				    		if($this->current_max_messages) {
+				    			//There is a current limit
+				    			$new_message = "Sorry, you cannot decrease the overflow count to below " . $max_messages . " messages, or set this above a maximum of " . $this->max_user_set_limit . " messages. You can contact your System Admin to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];
+				    		} else {
+				    			//It is currently unlimited - a normal user can't introduce a limit
+				    			$new_message = "Sorry, you cannot introduce an overflow limit because you currently have an unlimited count of messages. You can contact your System Admin to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];
+				    		}				    	
 				    	}
 				      } else {
 				      	error_log("uc_message = " . $uc_message .  " strpos result:" . strpos($uc_message, "UNLIMITED"));		//TESTING
