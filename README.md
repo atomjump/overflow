@@ -42,15 +42,19 @@ Enter a message
 ```
 overflow n
 ```
-To set the overflow message limits of 'n'. 'n' must be larger than the previous amount and less than the maximum a user is allowed to set (configurable in the config/config.json file)
+To set the overflow message limits of 'n' for that forum. 'n' must be larger than the previous amount and less than the maximum a user is allowed to set (configurable in the config/config.json file)
 
 But if you are a system user, you have no constraints, and can also enter:
 ```
 overflow unlimited
 ```
 
+Or, to switch the blurring of older images on or off for that forum
+```
+blur [on|off]
+```
+
 
 # Future development
 
-* Blur older photos in the oldest 60% or so of messages to save storage space
 * An 'archive' table option
