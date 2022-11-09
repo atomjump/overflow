@@ -368,7 +368,7 @@
 				    			$new_message = "Sorry, you cannot decrease the overflow count to below " . $max_messages . " messages, or set this above a maximum of " . $this->max_user_set_limit . " messages. You can contact your System Admin to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];
 				    		} else {
 				    			//It is currently unlimited - a normal user can't introduce a limit
-				    			$new_message = "Sorry, you cannot introduce an overflow limit because you currently have an unlimited count of messages. You can contact your System Admin to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];
+				    			$new_message = "Sorry, you cannot introduce an overflow limit because you currently have no overflow limit (i.e. the forum is unlimited). You can contact your System Admin to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];
 				    		}				    	
 				    	}
 				      } else {
