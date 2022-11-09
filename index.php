@@ -298,12 +298,12 @@
 	 				  	if(strpos($uc_message, "OFF") !== false) {
 	 				  		//Switch image blurring off for this forum
 	 				  		$result = $api->db_update("tbl_overflow_check", "enm_due_blurring = 'inactive' WHERE int_layer_id = " . clean_data($message_forum_id));	
-	 				  		$new_message = "You have successfully switched image blurring off, on this forum. Images tapped into will remain at their original resolution.";
+	 				  		$new_message = "You have successfully switched image blurring off, on this forum. Tapped images will remain at their original resolution.";
 	 				  	}
 	 				  	
 	 				  	if(strpos($uc_message, "ON") !== false) {
 	 				  		$result = $api->db_update("tbl_overflow_check", "enm_due_blurring = 'false' WHERE int_layer_id = " . clean_data($message_forum_id));	
-	 				  		$new_message = "You have successfully switched image blurring on, on this forum. Older images tapped into will be at a reduced resolution.";
+	 				  		$new_message = "You have successfully switched image blurring on, on this forum. Older tapped images will be at a reduced resolution.";
 	 				  	}
 	 				  } else {
 	 				  	//Let general users know they need to contact their admin user
