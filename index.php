@@ -353,7 +353,7 @@
 				    		}
 				    	} else {
 				    		//Not authorised to set this new value.
-				    		$new_message = "Sorry, you cannot decrease the maximum messages count of " . $max_messages . ", or set this above a maximum of " . $this->max_user_set_limit . " messages. You can contact your Admin user to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];				    	
+				    		$new_message = "Sorry, you cannot decrease the overflow count of " . $max_messages . " messages, or set this above a maximum of " . $this->max_user_set_limit . " messages. You can contact your Admin user to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];				    	
 				    	}
 				      } else {
 				      	error_log("uc_message = " . $uc_message .  " strpos result:" . strpos($uc_message, "UNLIMITED"));		//TESTING
