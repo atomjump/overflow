@@ -373,7 +373,7 @@
 				    	}
 				      } else {
 				      	error_log("uc_message = " . $uc_message .  " strpos result:" . strpos($uc_message, "UNLIMITED"));		//TESTING
-				      	if(strpos($uc_message, "UNLIMITED") >= 0) {
+				      	if(strpos($uc_message, "UNLIMITED") !== false) {
 				      		//Have entered 'overflow unlimited'. Trying to set this to an unlimited				      		 
 				      		 if(($is_admin == true)||($this->max_user_set_limit == null)) {
 				      			//Authorised to do this
