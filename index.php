@@ -24,8 +24,8 @@
    		private function get_max_messages($api, $overflow_config, $message_forum_id) {
    				//Sets the 4 private member variables
 	   			/*
-	   			  	private $default_max_messages;
-	   				private $default_max_messages_disp;			
+	   			  	private $current_max_messages;
+	   				private $current_max_messages_disp;			
 	   				private $max_user_set_limit;
 	   				private $max_user_set_limit_disp;
    				*/
@@ -46,12 +46,21 @@
 				//Note: if the status of this forum changes from private to public or vica-versa, this value will not be automatically
 				//updated. You would still need to update the tbl_overflow_check table specifically.
             	
+            	//Check the current actual max messages
+            	$sql = "SELECT * FROM tbl_overflow_check WHERE int_layer_id = " . clean_data($message_forum_id);
+		        $result = $api->db_select($sql);
+				if($row = $api->db_fetch_array($result))
+				{
+            		$this->current_max_messages = $row['int_max_messages'];
+            		if(is_null($this->current_max_messages)) {
+            			$this->current_max_messages_disp = "NULL";
+            		} else {
+            			$this->current_max_messages_disp = $this->current_max_messages;
+            		}
+            	}
             	
             	
-            	$max_messages = 50;		//Default
-            	$max_messages_disp = 50;		//Default
-            	
-            	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
+            	/*Not needed? if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
             	
             	
             		if(is_null($overflow_config['publicForumLimit'])) {
@@ -73,7 +82,7 @@
             			$this->default_max_messages = $overflow_config['privateForumLimit'];
             			$this->default_max_messages_disp = $this->max_messages;
             		}
-            	}
+            	}*/
             	
             	if((isset($overflow_config['publicMaxUserSetLimit']))&&($type == "public")) {
             	
@@ -329,7 +338,7 @@
 				      //the admin user.
 				      
 				       $this->get_max_messages($api, $overflow_config, $message_forum_id);		
-				       //This call sets $this->$default_max_messages, $default_max_messages_disp, $max_user_set_limit, $max_user_set_limit_disp;
+				       //This call sets $this->$current_max_messages, $current_max_messages_disp, $max_user_set_limit, $max_user_set_limit_disp;
 				      		 
 				     
 				      
@@ -337,7 +346,7 @@
 				      	
 				      	if(($is_admin == true)||			//admin user
 				      		($this->max_user_set_limit == null)||		//there is no limit on setting a maximum for users
-				      		(($new_max_messages > $max_messages)&&($new_max_messages <= $this->max_user_set_limit))) {
+				      		(($new_max_messages > $this->current_max_messages)&&($new_max_messages <= $this->max_user_set_limit))) {
 				      										//or, the limit is larger than before, and less than the limit that users can use.
 				      										//Note: a general user shouldn't be able to reduce the max, because this
 				      										//could lead to it being used to fully delete other people's messages on the forum
@@ -353,7 +362,7 @@
 				    		}
 				    	} else {
 				    		//Not authorised to set this new value.
-				    		$new_message = "Sorry, you cannot decrease the overflow count of " . $max_messages . " messages, or set this above a maximum of " . $this->max_user_set_limit . " messages. You can contact your Admin user to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];				    	
+				    		$new_message = "Sorry, you cannot decrease the overflow count to below " . $max_messages . " messages, or set this above a maximum of " . $this->max_user_set_limit . " messages. You can contact your Admin user to request this change, however. " . $overflow_config ['contactAdminToRemoveLimits'];				    	
 				    	}
 				      } else {
 				      	error_log("uc_message = " . $uc_message .  " strpos result:" . strpos($uc_message, "UNLIMITED"));		//TESTING
