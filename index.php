@@ -140,11 +140,7 @@
             global $cnf;
             
             
-          
-            
-           
-            error_log("After setting config:" . $overflow_config['publicForumLimit']);
-            
+                      
             $api = new cls_plugin_api();
                
             //Increment the count if a count already exists for this forum, else create a count and set as 1.  
@@ -204,9 +200,8 @@
             	//display a note to the user of the limit.
             	if($max_messages) {
 		        	$seventy_perc_msg_num = intval(0.7 * ($max_messages+$trigger_over_limit));
-		        	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt . "  Cnt trimmed = " . $row['int_cnt_trimmed']);		//TESTING
 		        	if(($row['int_cnt_trimmed'] == 0)&&($new_msg_cnt == $seventy_perc_msg_num)) {
-		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
+		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		
 						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
 						  $sender_name_str = "AtomJump";
 						  $sender_email = "webmaster@atomjump.com";
@@ -243,11 +238,7 @@
             	$max_messages = 50;		//Default
             	$max_messages_disp = 50;		//Default
             	
-            	error_log("Max messages before:" . $max_messages);
-            	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
-            	
-            		error_log("Type = public. New max messages will be " . $overflow_config['publicForumLimit']);		//TESTING
-            	
+             	if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {           	
             		if(is_null($overflow_config['publicForumLimit'])) {
             			$max_messages = null;
             			$max_messages_disp = "NULL";
@@ -258,10 +249,7 @@
             	}
             	
             	if((isset($overflow_config['privateForumLimit']))&&($type == "private")) {
-            	
-            		error_log("Type = private. New max messages will be " . $overflow_config['privateForumLimit']);		//TESTING
-            	
-            		if(is_null($overflow_config['privateForumLimit'])) {
+             		if(is_null($overflow_config['privateForumLimit'])) {
             			$max_messages = null;
             			$max_messages_disp = "NULL";
             		} else {
@@ -287,7 +275,7 @@
 				if($max_messages) {
 					$seventy_perc_msg_num = intval(0.7 * ($max_messages+$trigger_over_limit));
 		        	if($current_msg_count >= $seventy_perc_msg_num) {
-		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		//TODO: x can be up to 'y' maximum.
+		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		
 						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
 						  $sender_name_str = "AtomJump";
 						  $sender_email = "webmaster@atomjump.com";
@@ -331,9 +319,7 @@
 				      $new_max_messages = str_replace("\\n","", $new_max_messages);
 				      $new_max_messages = preg_replace('/\s+/', ' ', trim($new_max_messages));
 				      
-				    
-				      error_log("New max messages = " . $new_max_messages);			//TESTING
-				      
+				    				      
 				      //If this is less than the max a user can set from the config, we shouldn't set the value, unless they are
 				      //the admin user.
 				      
@@ -356,9 +342,7 @@
 						  	$result = $api->db_update("tbl_overflow_check", "int_max_messages = " . clean_data($new_max_messages) . " WHERE int_layer_id = " . clean_data($message_forum_id));	
 						  	$new_message = "You have successfully set the new overflow message count to " . $new_max_messages . ".";
 						  	$seventy_perc_msg_num = intval(0.7 * ($new_max_messages+$trigger_over_limit));
-						  	
-						  	error_log("Seventy perc = " . $seventy_perc_msg_num .  "  New msg cnt = " . $new_msg_cnt);		//TESTING
-				    		if($new_msg_cnt >= $seventy_perc_msg_num) {
+						  	if($new_msg_cnt >= $seventy_perc_msg_num) {
 				    			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
 				    		}
 				    	} else {
@@ -372,7 +356,6 @@
 				    		}				    	
 				    	}
 				      } else {
-				      	error_log("uc_message = " . $uc_message .  " strpos result:" . strpos($uc_message, "UNLIMITED"));		//TESTING
 				      	if(strpos($uc_message, "UNLIMITED") !== false) {
 				      		//Have entered 'overflow unlimited'. Trying to set this to an unlimited				      		 
 				      		 if(($is_admin == true)||($this->max_user_set_limit == null)) {

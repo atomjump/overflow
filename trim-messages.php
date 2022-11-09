@@ -169,8 +169,6 @@
     		
     	//Trims a list of messages with a SQL command to define which ones.
     	//Returns the message id of the last message processed (or null if there were none).
-    
-		//echo $sql . "\n";
 		
 		$last_msg_id = null;
 		

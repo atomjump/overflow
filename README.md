@@ -53,3 +53,4 @@ overflow unlimited
 # Future development
 
 * Blur older photos in the oldest 60% or so of messages to save storage space
+* An 'archive' table option
