@@ -310,9 +310,11 @@
 				      
 				      
 				      //Check whether this has been sent by the admin user
-				      $start_path = $this->add_trailing_slash_local($overflow_config['serverPath']);
-				      require($start_path . "classes/cls.layer.php");
-				      $ly = new cls_layer(); 				
+				      //$start_path = $this->add_trailing_slash_local($overflow_config['serverPath']);
+				      //require($start_path . "classes/cls.layer.php");
+				      //$ly = new cls_layer(); 				
+	 				  
+	 				  global $ly;
 	 				  $is_admin = $ly->is_admin($sender_id);	//Note: in future versions (with messaging server >= 3.2.2),
 	 				  											// we should just use the API call for this.
 				      
