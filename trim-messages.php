@@ -213,9 +213,22 @@
 							//In a blur situation, we just delete the hi-res image, and leave the normal 'blurred' version.
 						}
 						delete_image($image_hi_name, $image_folder, $preview);
-						if($blur == true) $last_blurred_msg_id = $row_msg['int_ssshout_id'];		//Record for next time
+						if($blur == true) {
+							$last_blurred_msg_id = $row_msg['int_ssshout_id'];		//Record for next time
+						
+							//We want to replace [filename]_HI.jpg versions in the message itself with [filename].jpg, since those
+							//versions no longer exist.
+							$old_shouted = $row_msg['var_shouted_processed'];
+							echo "Replacing _HI versions within the message: " . $old_shouted . "\n";
+							$new_shouted = str_replace("_HI.jpg", ".jpg", $old_shouted);
+							echo "New message being entered: " . $new_shouted . "\n";
+							$api->db_update("tbl_ssshout", "var_shouted_processed = \"" . $new_shouted ."\" WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
+						}	
+						
 					}
 				}
+				
+				
 				
 				
 				if($blur == false) {
@@ -230,16 +243,8 @@
 						echo "Would be deleting message " . $row_msg['int_ssshout_id'] . "\n";
 					
 					}
-				} else {
-					//We want to replace [filename]_HI.jpg versions in the message itself with [filename].jpg, since those
-					//versions no longer exist.
-					$old_shouted = $row_msg['var_shouted_processed'];
-					echo "Replacing _HI versions within the message: " . $old_shouted . "\n";
-					$new_shouted = str_replace("_HI.jpg", ".jpg", $old_shouted);
-					echo "New message being entered: " . $new_shouted . "\n";
-					$api->db_update("tbl_ssshout", "var_shouted_processed = \"" . $new_shouted ."\" WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
-					
 				}
+				
 			
 			
 			} else {
