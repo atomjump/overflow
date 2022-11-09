@@ -218,11 +218,11 @@
 						
 							//We want to replace [filename]_HI.jpg versions in the message itself with [filename].jpg, since those
 							//versions no longer exist.
-							$old_shouted = $row_msg['var_shouted_processed'];
-							echo "Replacing _HI versions within the processed version of the message: " . $row_msg['var_shouted'] ."\n";
+							$old_shouted = json_encode($row_msg['var_shouted_processed']);
+							echo "Replacing _HI versions within the processed version of the message: " . $old_shouted ."\n";
 							$new_shouted = str_replace("_HI.jpg", ".jpg", $old_shouted);
 							echo "New message being entered: " . clean_data_keep_tags($new_shouted) . "\n";
-							$api->db_update("tbl_ssshout", "var_shouted_processed = '" . clean_data_keep_tags($new_shouted) ."' WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
+							//$api->db_update("tbl_ssshout", "var_shouted_processed = '" . clean_data_keep_tags($new_shouted) ."' WHERE int_ssshout_id = " . $row_msg['int_ssshout_id']);
 						}	
 						
 					}
