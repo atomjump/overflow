@@ -1,16 +1,16 @@
 {
 	"serverPath": "/your/messaging/server/path/",
-	"notes": "Use message limit of 'null' for no limit",
+	"notes": "Use message limit of 'null' for no limit, for the next 4 options (not triggerOverLimit, which must be a positive number)",
 	"publicForumLimit": 50,
-	"privateForumLimit": 2000,
-	"triggerOverLimit": 10,
 	"publicMaxUserSetLimit": 400,
+	"privateForumLimit": 2000,
 	"privateMaxUserSetLimit": 5000,
+	"triggerOverLimit": 10,
 	"contactAdminToRemoveLimits": "Please contact us at https://your.url/contact/ to alter this forum's message overflow limits.",
 	"layerTitleDbOverride": null,
     "preview": false,
     "securityCode": "sample234ef4f-CHANGEME",
-    "urlPathToDeleteScript": "/api/plugins/overflow/remove-image.php",
+    "urlPathToDeleteScript": "/your-URL-path-off-domain/plugins/overflow/remove-image.php",
     "fullyDelete": true,
-    "blurImages": false
+    "blurImages": true
 }
