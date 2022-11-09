@@ -47,7 +47,7 @@
 	
 
 	//Create a table for overflow counting
-	$sql = "CREATE TABLE IF NOT EXISTS `tbl_overflow_check` ( `int_overflow_id` int(11) NOT NULL AUTO_INCREMENT, `int_layer_id` int(10) unsigned NOT NULL, `int_current_msg_cnt` int(10) unsigned NOT NULL default 0, `int_max_messages` int(10) default NULL, `enm_due_trimming` enum('true','false') COLLATE utf8_bin DEFAULT 'false', `int_last_blurred_msg_id` int(10) unsigned default NULL, `enm_due_blurring` enum('true','false') COLLATE utf8_bin DEFAULT 'false', `time_last_trimmed` timestamp not null default now(), `int_cnt_trimmed`  int(10) unsigned NOT NULL default 0, PRIMARY KEY (`int_overflow_id`), KEY `layer` (`int_layer_id`), KEY `due_trimming` (`enm_due_trimming`), KEY `due_blurring` (`enm_due_blurring`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+	$sql = "CREATE TABLE IF NOT EXISTS `tbl_overflow_check` ( `int_overflow_id` int(11) NOT NULL AUTO_INCREMENT, `int_layer_id` int(10) unsigned NOT NULL, `int_current_msg_cnt` int(10) unsigned NOT NULL default 0, `int_max_messages` int(10) default NULL, `enm_due_trimming` enum('true','false') COLLATE utf8_bin DEFAULT 'false', `int_last_blurred_msg_id` int(10) unsigned default NULL, `enm_due_blurring` enum('true','false','inactive') COLLATE utf8_bin DEFAULT 'false', `time_last_trimmed` timestamp not null default now(), `int_cnt_trimmed`  int(10) unsigned NOT NULL default 0, PRIMARY KEY (`int_overflow_id`), KEY `layer` (`int_layer_id`), KEY `due_trimming` (`enm_due_trimming`), KEY `due_blurring` (`enm_due_blurring`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
 	echo "Creating overflow check table. SQL:" . $sql . "\n";
 	$result = $api->db_select($sql);
 

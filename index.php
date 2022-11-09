@@ -58,32 +58,7 @@
             			$this->current_max_messages_disp = $this->current_max_messages;
             		}
             	}
-            	
-            	
-            	/*Not needed? if((isset($overflow_config['publicForumLimit']))&&($type == "public")) {
-            	
-            	
-            		if(is_null($overflow_config['publicForumLimit'])) {
-            			$this->default_max_messages = null;
-            			$this->default_max_messages_disp = "NULL";
-            		} else {
-            			$this->default_max_messages = $overflow_config['publicForumLimit'];
-            			$this->default_max_messages_disp = $this->max_messages;
-            		}
-            	}
-            	
-            	if((isset($overflow_config['privateForumLimit']))&&($type == "private")) {
-            	
-            	
-            		if(is_null($overflow_config['privateForumLimit'])) {
-            			$this->default_max_messages = null;
-            			$this->default_max_messages_disp = "NULL";
-            		} else {
-            			$this->default_max_messages = $overflow_config['privateForumLimit'];
-            			$this->default_max_messages_disp = $this->max_messages;
-            		}
-            	}*/
-            	
+            	           	
             	if((isset($overflow_config['publicMaxUserSetLimit']))&&($type == "public")) {
             	
             	
@@ -174,7 +149,11 @@
 				
 				//Once in every 10 or so new messages, we should set the forum to have it's images blurred
 				if(rand(0,10) == 0) {
-					$result = $api->db_update("tbl_overflow_check", "enm_due_blurring = 'true' WHERE int_layer_id = " . clean_data($message_forum_id));				
+					if($row['enm_due_blurring'] == "false") {
+						//An 'inactive' value in this record means we don't want to blur this forum. Can be set by the admin user,
+						//but a 'false' value means we can configure it to blur
+						$result = $api->db_update("tbl_overflow_check", "enm_due_blurring = 'true' WHERE int_layer_id = " . clean_data($message_forum_id));			
+					}	
 				}
 					
 					
@@ -307,15 +286,46 @@
             	$uc_message = strtoupper($actual_message[1]);
             	if($this->verbose == true) error_log($uc_message);  
 		         	
+		         	
+		        if(strpos($uc_message, "BLUR") === 0) { 
+		        	  //Found a message starting with e.g. 'blur [off|on]'
+		        	    //Check whether this has been sent by the admin user
+				      $lg = new cls_login(); 							  
+	 				  $is_admin = $lg->is_admin($sender_id);	//Note: in future versions (with messaging server >= 3.2.2),
+	 				  											// we should just use the API call for this.
+	 				  											
+	 				  if($is_admin == true) {
+	 				  	if(strpos($uc_message, "OFF") !== false) {
+	 				  		//Switch image blurring off for this forum
+	 				  		$result = $api->db_update("tbl_overflow_check", "enm_due_blurring = 'inactive' WHERE int_layer_id = " . clean_data($message_forum_id));	
+	 				  		$new_message = "You have successfully switched image blurring off, on this forum. Images tapped into will remain at their original resolution.";
+	 				  	}
+	 				  	
+	 				  	if(strpos($uc_message, "ON") !== false) {
+	 				  		$result = $api->db_update("tbl_overflow_check", "enm_due_blurring = 'false' WHERE int_layer_id = " . clean_data($message_forum_id));	
+	 				  		$new_message = "You have successfully switched image blurring on, on this forum. Older images tapped into will be at a reduced resolution.";
+	 				  	}
+	 				  } else {
+	 				  	//Let general users know they need to contact their admin user
+	 				  	$new_message = "Sorry, you need to be the System Admin to switch image blurring on or off. " . $overflow_config ['contactAdminToRemoveLimits'];
+	 				  }
+	 				  
+	 				  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
+					  $sender_name_str = "AtomJump";
+					  $sender_email = "webmaster@atomjump.com";
+					  $sender_ip = "111.111.111.111";
+					  $options = array('notification' => false, 'allow_plugins' => false);
+					  $api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
+	 				  
+	 				  
+		        }	
+		         	
 		        if(strpos($uc_message, "OVERFLOW") === 0) {
 		        	  //Found a message starting with e.g. 'overflow [message cnt]'. The 0 means the position is at char 0.
 				      
 				      
 				      //Check whether this has been sent by the admin user
-				      //$start_path = $this->add_trailing_slash_local($overflow_config['serverPath']);
-				      //require($start_path . "classes/cls.layer.php");
-				      $lg = new cls_login(); 				
-	 				  
+				      $lg = new cls_login(); 							  
 	 				  $is_admin = $lg->is_admin($sender_id);	//Note: in future versions (with messaging server >= 3.2.2),
 	 				  											// we should just use the API call for this.
 				      
