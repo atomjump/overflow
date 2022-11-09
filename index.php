@@ -171,6 +171,11 @@
 						$new_msg_cnt = $row['record_count'];
 					}
 				}
+				
+				//Once in every 10 or so new messages, we should set the forum to have it's images blurred
+				if(rand(0,10) == 0) {
+					$result = $api->db_update("tbl_overflow_check", "enm_due_blurring = 'true' WHERE int_layer_id = " . clean_data($message_forum_id));				
+				}
 					
 					
             	 

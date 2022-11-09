@@ -382,7 +382,7 @@
 			
 			$last_blurred_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, true);
 			if($last_blurred_msg_id) {
-				$api->db_update("tbl_overflow_check", "int_last_blurred_msg_id = " . $last_blurred_msg_id . " WHERE int_layer_id = " . $this_layer);
+				$api->db_update("tbl_overflow_check", "int_last_blurred_msg_id = " . $last_blurred_msg_id . ", enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
 			}
 	}
 	
