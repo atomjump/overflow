@@ -312,10 +312,9 @@
 				      //Check whether this has been sent by the admin user
 				      //$start_path = $this->add_trailing_slash_local($overflow_config['serverPath']);
 				      //require($start_path . "classes/cls.layer.php");
-				      //$ly = new cls_layer(); 				
+				      $lg = new cls_login(); 				
 	 				  
-	 				  global $ly;
-	 				  $is_admin = $ly->is_admin($sender_id);	//Note: in future versions (with messaging server >= 3.2.2),
+	 				  $is_admin = $lg->is_admin($sender_id);	//Note: in future versions (with messaging server >= 3.2.2),
 	 				  											// we should just use the API call for this.
 				      
 				      $new_max_messages = substr($actual_message[1], 9);		//Where 9 is string length of "OVERFLOW "
