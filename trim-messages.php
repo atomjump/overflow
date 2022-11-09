@@ -368,7 +368,7 @@
 	{
 			$this_layer = $row['int_layer_id'];
 			$last_blurred_id = $row['int_last_blurred_msg_id'];
-			
+			if(!$last_blurred_id) $last_blurred_id = 0;
 			
 			echo "Layer: " . $this_layer . "\n";
 			
