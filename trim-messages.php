@@ -400,7 +400,7 @@
 				
 				//Get messages in the forum that are aged - sort by order inserted, up to the limit of the user defined overflow limit
 				$old_messages_cnt = $row['int_current_msg_cnt'];
-				$message_start_to_blur = 0;	//TESTING in 0.  intval($row['int_max_messages'] * 0.3);		//30% down the list from the latest
+				$message_start_to_blur = intval($row['int_max_messages'] * 0.3);		//30% down the list from the latest
 				$max_messages_to_blur = $row['int_max_messages'];
 				$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
 				$sql = "SELECT int_ssshout_id, var_shouted, var_shouted_processed FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND int_ssshout_id > " . $last_blurred_id . " ORDER BY int_ssshout_id DESC LIMIT " . $message_start_to_blur . ", " . $max_messages_to_blur;
