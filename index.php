@@ -346,8 +346,9 @@
 				      	
 				      	if(($is_admin == true)||			//admin user
 				      		($this->max_user_set_limit == null)||		//there is no limit on setting a maximum for users
-				      		(($new_max_messages > $this->current_max_messages)&&($new_max_messages <= $this->max_user_set_limit))) {
-				      										//or, the limit is larger than before, and less than the limit that users can use.
+				      		(($this->current_max_messages)&&($new_max_messages > $this->current_max_messages)&&($new_max_messages <= $this->max_user_set_limit))) {
+				      										//or, the limit is larger than before (and it was not unlimited), and
+				      									    // less than the limit that users can set it to.
 				      										//Note: a general user shouldn't be able to reduce the max, because this
 				      										//could lead to it being used to fully delete other people's messages on the forum
 				      

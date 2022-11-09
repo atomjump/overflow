@@ -6,7 +6,7 @@
 	"triggerOverLimit": 10,
 	"publicMaxUserSetLimit": 400,
 	"privateMaxUserSetLimit": 5000,
-	"contactAdminToRemoveLimits": "Please contact us at https://your.url/contact/ to increase this forum's message overflow limits.",
+	"contactAdminToRemoveLimits": "Please contact us at https://your.url/contact/ to alter this forum's message overflow limits.",
 	"layerTitleDbOverride": null,
     "preview": false,
     "securityCode": "sample234ef4f-CHANGEME",
