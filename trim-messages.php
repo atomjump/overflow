@@ -368,29 +368,34 @@
 	} 
 	
 	
-	echo "Checking for layers due to have their images blurred...\n";
-	$sql = "SELECT * FROM tbl_overflow_check WHERE enm_due_blurring = 'true'";
-    $result = $api->db_select($sql);
-	while($row = $api->db_fetch_array($result))
-	{
-			$this_layer = $row['int_layer_id'];
-			$last_blurred_id = $row['int_last_blurred_msg_id'];
-			if(!$last_blurred_id) $last_blurred_id = 0;
-			
-			echo "Layer: " . $this_layer . "\n";
-			
-			//Get messages in the forum that are aged - sort by order inserted, up to the limit of the user defined overflow limit
-			$old_messages_cnt = $row['int_current_msg_cnt'];
-			$message_start_to_blur = intval($row['int_max_messages'] * 0.3);		//30% down the list from the latest
-			$max_messages_to_blur = $row['int_max_messages'];
-			$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
-			$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND int_ssshout_id > " . $last_blurred_id . " ORDER BY int_ssshout_id DESC LIMIT " . $message_start_to_blur . ", " . $max_messages_to_blur;
-			echo $sql . "\n";		//TESTING
-			
-			$last_blurred_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, true);
-			if($last_blurred_msg_id) {
-				$api->db_update("tbl_overflow_check", "int_last_blurred_msg_id = " . $last_blurred_msg_id . ", enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
-			}
+	if((isset($overflow_config['blurImages']))&&($overflow_config['blurImages'] == true)) {
+		//Note: currently this feature is experimental.  It does delete the hi-res version of the image,
+		//which will save space, but the image link goes to a blank AtomJump logo image when you click on it, rather than the low-res
+		//version.
+		echo "Checking for layers due to have their images blurred...\n";
+		$sql = "SELECT * FROM tbl_overflow_check WHERE enm_due_blurring = 'true'";
+		$result = $api->db_select($sql);
+		while($row = $api->db_fetch_array($result))
+		{
+				$this_layer = $row['int_layer_id'];
+				$last_blurred_id = $row['int_last_blurred_msg_id'];
+				if(!$last_blurred_id) $last_blurred_id = 0;
+				
+				echo "Layer: " . $this_layer . "\n";
+				
+				//Get messages in the forum that are aged - sort by order inserted, up to the limit of the user defined overflow limit
+				$old_messages_cnt = $row['int_current_msg_cnt'];
+				$message_start_to_blur = intval($row['int_max_messages'] * 0.3);		//30% down the list from the latest
+				$max_messages_to_blur = $row['int_max_messages'];
+				$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
+				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND int_ssshout_id > " . $last_blurred_id . " ORDER BY int_ssshout_id DESC LIMIT " . $message_start_to_blur . ", " . $max_messages_to_blur;
+				echo $sql . "\n";		//TESTING
+				
+				$last_blurred_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, true);
+				if($last_blurred_msg_id) {
+					$api->db_update("tbl_overflow_check", "int_last_blurred_msg_id = " . $last_blurred_msg_id . ", enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
+				}
+		}
 	}
 	
 	session_destroy();  //remove session

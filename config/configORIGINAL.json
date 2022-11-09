@@ -11,5 +11,6 @@
     "preview": false,
     "securityCode": "sample234ef4f-CHANGEME",
     "urlPathToDeleteScript": "/api/plugins/overflow/remove-image.php",
-    "fullyDelete": true
+    "fullyDelete": true,
+    "blurImages": false
 }
