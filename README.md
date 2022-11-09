@@ -36,8 +36,20 @@ this should be added to your AtomJump Messaging server's main .htaccess file:
 RewriteRule remove-image - [L,PT]
 ```
 
+# Usage
+
+Enter a message
+```
+overflow n
+```
+To set the overflow message limits of 'n'. 'n' must be larger than the previous amount and less than the maximum a user is allowed to set (configurable in the config/config.json file)
+
+But if you are a system user, you have no constraints, and can also enter:
+```
+overflow unlimited
+```
+
 
 # Future development
 
-* Warning about message limit being hit
-* Have facility for sysadmin or general users to change the message limit.
+* Blur older photos in the oldest 60% or so of messages to save storage space
