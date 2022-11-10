@@ -170,6 +170,10 @@
     	//Trims a list of messages with a SQL command to define which ones.
     	//Returns the message id of the last message processed (or null if there were none).
 		
+		//Note: this function could take quite a while, potentially longer than the gap between CRON requests, so it could be
+		//re-entrant. For this reason, we have an 'enm_lockon' that
+		
+		
 		$last_msg_id = null;
 		$last_blurred_msg_id = null;
 		
@@ -349,35 +353,56 @@
     $result = $api->db_select($sql);
 	while($row = $api->db_fetch_array($result))
 	{
+	
 			$this_layer = $row['int_layer_id'];
 			
 			echo "Layer: " . $this_layer . "\n";
-			
-			//Get messages in the forum that are aged - sort by order inserted, up to the limit of the user defined overflow limit
-			$old_messages_cnt = $row['int_current_msg_cnt'];
-			$messages_to_trim = $old_messages_cnt - $row['int_max_messages'];
-			$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
-			$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = 'true' ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
-			
-			$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
-			
-			if($last_msg_id) {
-				//now remove the inactive messages (typically 'typing' etc.) up until the end of the last message
-				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active != 'true' AND int_ssshout_id < " . $last_msg_id . " ORDER BY int_ssshout_id";
-				trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
-				//Note: these messages are not counted in the trimmed count.
-			}
+
+			if($row['enm_lockon'] == 'false') {
+				//Put a lock on this forum while we're processing to prevent re-entrant calls
+				$api->db_update("tbl_overflow_check", "enm_lockon = 'true' WHERE int_layer_id = " . $this_layer);
 
 
-			$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
-			$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
-			if($preview == false) {
-				//Write back the number of messages trimmed into the tbl_overflow record, reduce the count, switch to 'not due a trimming'
+			
+				//Get messages in the forum that are aged - sort by order inserted, up to the limit of the user defined overflow limit
+				$old_messages_cnt = $row['int_current_msg_cnt'];
+				$messages_to_trim = $old_messages_cnt - $row['int_max_messages'];
+				$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
+				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = 'true' ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
 				
-				$api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_messages_cnt . ", int_cnt_trimmed = " . $new_trimmed_cnt . ", enm_due_trimming = 'false' WHERE int_layer_id = " . $this_layer);
-				echo "Set message cnt = " . $new_messages_cnt . ", trimmed cnt = " . $new_trimmed_cnt . " for layer " . $this_layer . "\n";
-			} else {
-				echo "Would set message cnt = " . $new_messages_cnt . ", trimmed cnt = " . $new_trimmed_cnt . " for layer " . $this_layer . "\n";
+				$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
+				
+				if($last_msg_id) {
+					//now remove the inactive messages (typically 'typing' etc.) up until the end of the last message
+					$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active != 'true' AND int_ssshout_id < " . $last_msg_id . " ORDER BY int_ssshout_id";
+					trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
+					//Note: these messages are not counted in the trimmed count.
+				}
+
+
+				//Because the functions above could take a while, there is a fairly high chance that the number of messages has increased while it was running. We therefore need to get the current values again.
+				$sqlb = "SELECT * FROM tbl_overflow_check WHERE int_layer_id = " . $this_layer;
+				$resultb = $api->db_select($sqlb);
+				if($rowb = $api->db_fetch_array($resultb))
+				{
+					$old_messages_cnt = $row['int_current_msg_cnt'];
+					$current_trimmed_cnt = $rowb['int_cnt_trimmed'];
+				}
+				
+				
+				$new_trimmed_cnt = $current_trimmed_cnt + $messages_to_trim;
+				$new_messages_cnt = $old_messages_cnt - $messages_to_trim;
+				if($preview == false) {
+					//Write back the number of messages trimmed into the tbl_overflow record, reduce the count, switch to 'not due a trimming'
+					
+					$api->db_update("tbl_overflow_check", "int_current_msg_cnt = " . $new_messages_cnt . ", int_cnt_trimmed = " . $new_trimmed_cnt . ", enm_due_trimming = 'false' WHERE int_layer_id = " . $this_layer);
+					echo "Set message cnt = " . $new_messages_cnt . ", trimmed cnt = " . $new_trimmed_cnt . " for layer " . $this_layer . "\n";
+				} else {
+					echo "Would set message cnt = " . $new_messages_cnt . ", trimmed cnt = " . $new_trimmed_cnt . " for layer " . $this_layer . "\n";
+				}
+				
+				//Remove the lock on this forum
+				$api->db_update("tbl_overflow_check", "enm_lockon = 'false' WHERE int_layer_id = " . $this_layer);
 			}
 		
 	} 
