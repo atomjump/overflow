@@ -28,7 +28,10 @@
     }
  
 	$start_path = add_trailing_slash_local($overflow_config['serverPath']);
-	
+	if($overflow_config['layerTitleDbOverride']) {
+		//Override the selected database
+		$_REQUEST['uniqueFeedbackId'] = $overflow_config['layerTitleDbOverride'];
+	}	
 	include_once($start_path . 'config/db_connect.php');	
 	echo "Start path:" . $start_path . "\n";
 
