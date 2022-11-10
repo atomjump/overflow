@@ -403,6 +403,9 @@
 				
 				//Remove the lock on this forum
 				$api->db_update("tbl_overflow_check", "enm_lockon = 'false' WHERE int_layer_id = " . $this_layer);
+			} else {
+				echo "Sorry, this forum is currently being processed by another trim request. Please wait until that has finished.\n";
+				error_log("An attempt has been made to trim a forum that is already being trimmed. It will try again on the next cron request.");
 			}
 		
 	} 
@@ -418,25 +421,40 @@
 		while($row = $api->db_fetch_array($result))
 		{
 				$this_layer = $row['int_layer_id'];
-				$last_blurred_id = $row['int_last_blurred_msg_id'];
-				if(!$last_blurred_id) $last_blurred_id = 0;
 				
-				echo "Layer: " . $this_layer . "\n";
+				if($row['enm_lockon'] == 'false') {
+					//Put a lock on this forum while we're processing to prevent re-entrant calls
+					$api->db_update("tbl_overflow_check", "enm_lockon = 'true' WHERE int_layer_id = " . $this_layer);
+
 				
-				//Get messages in the forum that are aged - sort by order inserted, up to the limit of the user defined overflow limit
-				$old_messages_cnt = $row['int_current_msg_cnt'];
-				$message_start_to_blur = intval($row['int_max_messages'] * 0.3);		//30% down the list from the latest
-				$max_messages_to_blur = $row['int_max_messages'];
-				$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
-				$sql = "SELECT int_ssshout_id, var_shouted, var_shouted_processed FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND int_ssshout_id > " . $last_blurred_id . " ORDER BY int_ssshout_id DESC LIMIT " . $message_start_to_blur . ", " . $max_messages_to_blur;
-				echo $sql . "\n";	
 				
-				$last_blurred_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, true);  //True is for blurring - no messages should be deleted
-				if($last_blurred_msg_id) {
-					$api->db_update("tbl_overflow_check", "int_last_blurred_msg_id = " . $last_blurred_msg_id . ", enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
+					$last_blurred_id = $row['int_last_blurred_msg_id'];
+					if(!$last_blurred_id) $last_blurred_id = 0;
+					
+					echo "Layer: " . $this_layer . "\n";
+					
+					//Get messages in the forum that are aged - sort by order inserted, up to the limit of the user defined overflow limit
+					$old_messages_cnt = $row['int_current_msg_cnt'];
+					$message_start_to_blur = intval($row['int_max_messages'] * 0.3);		//30% down the list from the latest
+					$max_messages_to_blur = $row['int_max_messages'];
+					$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
+					$sql = "SELECT int_ssshout_id, var_shouted, var_shouted_processed FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND int_ssshout_id > " . $last_blurred_id . " ORDER BY int_ssshout_id DESC LIMIT " . $message_start_to_blur . ", " . $max_messages_to_blur;
+					echo $sql . "\n";	
+					
+					$last_blurred_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, true);  //True is for blurring - no messages should be deleted
+					if($last_blurred_msg_id) {
+						$api->db_update("tbl_overflow_check", "int_last_blurred_msg_id = " . $last_blurred_msg_id . ", enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
+					} else {
+						//But switch off the blur checking until later regardless.
+						$api->db_update("tbl_overflow_check", "enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
+					}
+					
+					
+					//Remove the lock on this forum
+					$api->db_update("tbl_overflow_check", "enm_lockon = 'false' WHERE int_layer_id = " . $this_layer);
 				} else {
-					//But switch off the blur checking until later regardless.
-					$api->db_update("tbl_overflow_check", "enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
+					echo "Sorry, this forum is currently being processed by another trim request. Please wait until that has finished.\n";
+					error_log("An attempt has been made to trim a forum that is already being trimmed. It will try again on the next cron request.");
 				}
 				
 		}
