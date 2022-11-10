@@ -39,8 +39,15 @@ Add the string "overflow" into your-server-path/config/config.json plugins array
 Add an hourly (or some other timeframe) CRON entry for trim-messages.php e.g.
 
 ```
-	0 * * * *       /usr/bin/php /your_server_path/api/plugins/overflow/trim-messages.php
+0 * * * *   /usr/bin/php /your_server_path/api/plugins/overflow/trim-messages.php
 ```
+
+Note: if this is a heavily trafficked server you may be best to use a 'nice' command on this CRON, so that it runs as a low-priority e.g.
+
+```
+0 * * * *	/usr/bin/nice -n 10 /usr/bin/php -q /your_server_path/api/plugins/overflow/trim-messages.php
+```
+
 
 Your AtomJump Messaging server's main .htaccess file:
 
