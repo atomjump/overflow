@@ -385,7 +385,7 @@
 				$resultb = $api->db_select($sqlb);
 				if($rowb = $api->db_fetch_array($resultb))
 				{
-					$old_messages_cnt = $row['int_current_msg_cnt'];
+					$old_messages_cnt = $rowb['int_current_msg_cnt'];
 					$current_trimmed_cnt = $rowb['int_cnt_trimmed'];
 				}
 				
