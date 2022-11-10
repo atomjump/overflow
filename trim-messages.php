@@ -357,13 +357,13 @@
 			$old_messages_cnt = $row['int_current_msg_cnt'];
 			$messages_to_trim = $old_messages_cnt - $row['int_max_messages'];
 			$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
-			$sql = "SELECT int_ssshout_id, var_shouted, var_shouted_processed FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = 'true' ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
+			$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = 'true' ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
 			
 			$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder);
 			
 			if($last_msg_id) {
 				//now remove the inactive messages (typically 'typing' etc.) up until the end of the last message
-				$sql = "SELECT int_ssshout_id, var_shouted, var_shouted_processed FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active != 'true' AND int_ssshout_id < " . $last_msg_id . " ORDER BY int_ssshout_id";
+				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active != 'true' AND int_ssshout_id < " . $last_msg_id . " ORDER BY int_ssshout_id";
 				trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder);
 				//Note: these messages are not counted in the trimmed count.
 			}
