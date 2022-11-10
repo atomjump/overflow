@@ -185,7 +185,7 @@
             	if($max_messages) {
 		        	$seventy_perc_msg_num = intval(0.7 * ($max_messages+$trigger_over_limit));
 		        	if(($row['int_cnt_trimmed'] == 0)&&($new_msg_cnt == $seventy_perc_msg_num)) {
-		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		
+		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. Tip: you can 'export' the whole forum (see the Up Arrow along the bottom) to get a backup.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";	
 						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
 						  $sender_name_str = "AtomJump";
 						  $sender_email = "webmaster@atomjump.com";
@@ -259,7 +259,7 @@
 				if($max_messages) {
 					$seventy_perc_msg_num = intval(0.7 * ($max_messages+$trigger_over_limit));
 		        	if($current_msg_count >= $seventy_perc_msg_num) {
-		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but please keep in mind that you are sharing resources with other users.";		
+		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. Tip: you can 'export' the whole forum (see the Up Arrow along the bottom) to get a backup.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";		
 						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
 						  $sender_name_str = "AtomJump";
 						  $sender_email = "webmaster@atomjump.com";
@@ -358,7 +358,7 @@
 						  	$new_message = "You have successfully set the new overflow message count to " . $new_max_messages . ".";
 						  	$seventy_perc_msg_num = intval(0.7 * ($new_max_messages+$trigger_over_limit));
 						  	if($new_msg_cnt >= $seventy_perc_msg_num) {
-				    			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. If you want to save older messages you can 'export' them at any time.";
+				    			$new_message .= " Warning! You are already past 70% of this overflow count - the oldest will be removed as you enter new ones. Tip: you can 'export' the whole forum (see the Up Arrow along the bottom) to get a backup.";				    			
 				    		}
 				    	} else {
 				    		//Not authorised to set this new value.
