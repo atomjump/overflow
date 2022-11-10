@@ -404,12 +404,16 @@
 				$max_messages_to_blur = $row['int_max_messages'];
 				$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
 				$sql = "SELECT int_ssshout_id, var_shouted, var_shouted_processed FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND int_ssshout_id > " . $last_blurred_id . " ORDER BY int_ssshout_id DESC LIMIT " . $message_start_to_blur . ", " . $max_messages_to_blur;
-				echo $sql . "\n";		//TESTING
+				echo $sql . "\n";	
 				
 				$last_blurred_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, true);
 				if($last_blurred_msg_id) {
 					$api->db_update("tbl_overflow_check", "int_last_blurred_msg_id = " . $last_blurred_msg_id . ", enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
+				} else {
+					//But switch off the blur checking until later regardless.
+					$api->db_update("tbl_overflow_check", "enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
 				}
+				
 		}
 	}
 	
