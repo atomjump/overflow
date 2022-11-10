@@ -231,7 +231,7 @@
 				
 				
 				
-				if($blur == false) {
+				if($blur !== true) {
 					//Delete the record
 					if(($preview == false)) {
 					
@@ -359,12 +359,12 @@
 			$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
 			$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = 'true' ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
 			
-			$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder);
+			$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
 			
 			if($last_msg_id) {
 				//now remove the inactive messages (typically 'typing' etc.) up until the end of the last message
 				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active != 'true' AND int_ssshout_id < " . $last_msg_id . " ORDER BY int_ssshout_id";
-				trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder);
+				trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
 				//Note: these messages are not counted in the trimmed count.
 			}
 
@@ -406,7 +406,7 @@
 				$sql = "SELECT int_ssshout_id, var_shouted, var_shouted_processed FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND int_ssshout_id > " . $last_blurred_id . " ORDER BY int_ssshout_id DESC LIMIT " . $message_start_to_blur . ", " . $max_messages_to_blur;
 				echo $sql . "\n";	
 				
-				$last_blurred_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, true);
+				$last_blurred_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, true);  //True is for blurring - no messages should be deleted
 				if($last_blurred_msg_id) {
 					$api->db_update("tbl_overflow_check", "int_last_blurred_msg_id = " . $last_blurred_msg_id . ", enm_due_blurring = 'false' WHERE int_layer_id = " . $this_layer);
 				} else {
