@@ -149,11 +149,16 @@
 				
 				//Once in every 10 or so new messages, we should set the forum to have it's images blurred
 				if(rand(0,10) == 0) {
+					error_log("Rand selected 0. enm_due_blurring = " . $row['enm_due_blurring']);	//TESTING
 					if($row['enm_due_blurring'] == "false") {
+						error_log("Setting to 'true'");	//TESTING
 						//An 'inactive' value in this record means we don't want to blur this forum. Can be set by the admin user,
 						//but a 'false' value means we can configure it to blur
 						$result = $api->db_update("tbl_overflow_check", "enm_due_blurring = 'true' WHERE int_layer_id = " . clean_data($message_forum_id));			
 					}	
+				} else {
+					error_log("Rand selected not 0");   //TESTING
+				
 				}
 					
 					
