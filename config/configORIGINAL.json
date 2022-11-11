@@ -6,6 +6,8 @@
 	"privateForumLimit": 2000,
 	"privateMaxUserSetLimit": 5000,
 	"triggerOverLimit": 10,
+	"robotName": "Overflow",
+	"robotEmail": "yourname@yourcompany.com",
 	"contactAdminToRemoveLimits": "Please contact us at https://your.url/contact/ to alter this forum's message overflow limits.",
 	"layerTitleDbOverride": null,
     "preview": false,

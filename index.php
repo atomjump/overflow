@@ -110,9 +110,26 @@
                     exit(0);
                 }
             }
-        
-        
+            
+            
             global $cnf;
+            
+            $overflow_robot_name = "Overflow";		//Default name
+            $overflow_robot_email = "noreply@yourcompany.com";
+            if(isset($overflow_config['robotName'])) {
+            	$overflow_robot_name = $overflow_config['robotName'];
+            }
+            if(isset($cnf['email']['noReplyEmail'])) {
+            	$overflow_robot_email = $cnf['email']['noReplyEmail'];            
+            }
+            if(isset($cnf['email']['adminEmail'])) {
+            	$overflow_robot_email = $cnf['email']['adminEmail'];            
+            }
+             if(isset($overflow_config['robotEmail'])) {
+            	$overflow_robot_email = $overflow_config['robotEmail'];
+            }
+        
+        
             
             
                       
@@ -187,8 +204,8 @@
 		        	if(($row['int_cnt_trimmed'] == 0)&&($new_msg_cnt == $seventy_perc_msg_num)) {
 		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. Tip: you can 'export' the whole forum (see the Up Arrow along the bottom) to get a backup.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";	
 						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
-						  $sender_name_str = "AtomJump";
-						  $sender_email = "webmaster@atomjump.com";
+						  $sender_name_str = $overflow_robot_name;	
+						  $sender_email = $overflow_robot_email;
 						  $sender_ip = "111.111.111.111";
 						  $options = array('notification' => false, 'allow_plugins' => false);
 					   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
@@ -261,8 +278,8 @@
 		        	if($current_msg_count >= $seventy_perc_msg_num) {
 		        		  $new_message = "Warning! This forum only keeps the latest " . $max_messages . " messages, and you have reached 70% of that number - the oldest will be removed as you enter new ones. Tip: you can 'export' the whole forum (see the Up Arrow along the bottom) to get a backup.  To increase the maximum number of messages on the forum please enter 'overflow x' where x is the number, but do keep in mind that you are sharing resources with other users.";		
 						  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
-						  $sender_name_str = "AtomJump";
-						  $sender_email = "webmaster@atomjump.com";
+						  $sender_name_str = $overflow_robot_name;
+						  $sender_email = $overflow_robot_email;
 						  $sender_ip = "111.111.111.111";
 						  $options = array('notification' => false, 'allow_plugins' => false);
 					   	$api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
@@ -311,8 +328,8 @@
 	 				  }
 	 				  
 	 				  $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
-					  $sender_name_str = "AtomJump";
-					  $sender_email = "webmaster@atomjump.com";
+					  $sender_name_str = $overflow_robot_name;
+					  $sender_email = $overflow_robot_email;
 					  $sender_ip = "111.111.111.111";
 					  $options = array('notification' => false, 'allow_plugins' => false);
 					  $api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
@@ -388,8 +405,8 @@
 				      }
 				    			      
 				      $recipient_ip_colon_id = "";		//No recipient, so the whole group. 123.123.123.123:" . $recipient_id;
-					  $sender_name_str = "AtomJump";
-					  $sender_email = "webmaster@atomjump.com";
+					  $sender_name_str = $overflow_robot_name;
+					  $sender_email = $overflow_robot_email;
 					  $sender_ip = "111.111.111.111";
 					  $options = array('notification' => false, 'allow_plugins' => false);
 					  $api->new_message($sender_name_str, $new_message, $recipient_ip_colon_id, $sender_email, $sender_ip, $message_forum_id, $options);
