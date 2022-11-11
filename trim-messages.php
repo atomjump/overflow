@@ -174,14 +174,15 @@
 		//re-entrant. For this reason, we have an 'enm_lockon' that
 		
 		
-		$last_msg_id = null;
+		$first_msg_id = null;
 		$last_blurred_msg_id = null;
 		
 		$result_msgs = $api->db_select($sql);
 		while($row_msg = $api->db_fetch_array($result_msgs))
 		{
 			echo "Message: " . $row_msg['var_shouted'] . "    ID:" . $row_msg['int_ssshout_id'] . "\n";
-			$last_msg_id = $row_msg['int_ssshout_id'];		//Store for the return value
+			
+			if(!$first_msg_id) $first_msg_id = $row_msg['int_ssshout_id'];		//Store for the return value
 			
 			global $cnf;
 			
@@ -272,7 +273,7 @@
 		if($blur == true) {
 			return $last_blurred_msg_id;
 		} else {			
-			return $last_msg_id;
+			return $first_msg_id;
 		}
 	}
     
@@ -372,11 +373,11 @@
 				$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
 				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = 'true' ORDER BY int_ssshout_id DESC LIMIT " . $messages_to_not_trim . ", " . $max_messages_to_trim;
 				
-				$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
+				$first_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
 				
-				if($last_msg_id) {
+				if($first_msg_id) {
 					//now remove the inactive messages (typically 'typing' etc.) up until the end of the last message
-					$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active != 'true' AND int_ssshout_id < " . $last_msg_id . " ORDER BY int_ssshout_id";
+					$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active != 'true' AND int_ssshout_id < " . $first_msg_id . " ORDER BY int_ssshout_id";
 					trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
 					//Note: these messages are not counted in the trimmed count.
 				}
