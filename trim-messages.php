@@ -366,9 +366,11 @@
 			
 				//Get messages in the forum that are aged - sort by order inserted, up to the limit of the user defined overflow limit
 				$old_messages_cnt = $row['int_current_msg_cnt'];
-				$messages_to_trim = $old_messages_cnt - $row['int_max_messages'];
+				$messages_to_trim = $old_messages_cnt - $row['int_max_messages'];		
+				$max_messages_to_trim = $old_messages_cnt - $row['int_max_messages'] + 500;  //The 500 is an arbitrary number that is more than people are likely to delete in an hour
+				$messages_to_not_trim = $row['int_max_messages'];			//These are the ones that should not be touched - the most recent.
 				$current_trimmed_cnt = $row['int_cnt_trimmed'];		//Use this for writing back the trimmed count as a record
-				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = 'true' ORDER BY int_ssshout_id LIMIT " . $messages_to_trim;
+				$sql = "SELECT int_ssshout_id, var_shouted FROM tbl_ssshout WHERE int_layer_id = " . $this_layer . " AND enm_active = 'true' ORDER BY int_ssshout_id DESC LIMIT " . $messages_to_not_trim . ", " . $max_messages_to_trim;
 				
 				$last_msg_id = trim_messages($api, $sql, $fully_delete, $preview, $notify, $image_folder, false);		//false is full message trimming (not blurring)
 				
