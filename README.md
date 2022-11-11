@@ -116,3 +116,7 @@ In this context 'public' forums have no user-entered password to gain entry, vs 
 # Future development
 
 * An 'archive' table option
+
+* A message for users highlighting the clipped messages (and potentially how many)
+
+* Multiple languages
