@@ -1,5 +1,7 @@
 <img src="https://atomjump.com/images/logo80.png">
 
+__WARNING: this project has now moved to https://src.atomjump.com/atomjump/overflow.git__
+
 # overflow
 
 Acts like an 'overflow' on a sink: when there are too many messages in an AtomJump Messaging forum, the old messages are trimmed.
